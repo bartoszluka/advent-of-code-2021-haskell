@@ -17,6 +17,7 @@ main = hspec $ do
       property $ \lst -> choose Just lst `shouldBe` (lst :: [Int])
     it "chooses no values from a list full of Nothings" $ do
       choose (const Nothing) [1 .. 10] `shouldBe` ([] :: [Int])
+
   describe "Extra.readMaybeInt" $ do
     it "converts stringed integers to Maybe Int" $ do
       property $ \i -> readMaybeInt (show i) `shouldBe` (Just i :: Maybe Int)
@@ -25,6 +26,7 @@ main = hspec $ do
       readMaybeInt "a" `shouldBe` Nothing
     it "returns Nothing when the string is empty" $ do
       readMaybeInt "" `shouldBe` Nothing
+
   describe "Day05.getPoints" $ do
     it "creates a horizontal line when the 'x' values are the same" $ do
       property $ \x y1 y2 ->
