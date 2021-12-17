@@ -4,26 +4,20 @@ import Control.Monad (liftM2)
 import Data.List (genericLength, minimumBy)
 import GHC.Float (rationalToDouble)
 
-howMuchFuel :: Num c => c -> [c] -> c
-howMuchFuel to = sum . map (abs . subtract to)
-
-listMax :: Ord a => [a] -> a
-listMax = foldl1 (\acc curr -> if curr > acc then curr else acc)
-
-listMin :: Ord a => [a] -> a
-listMin = foldl1 (\acc curr -> if curr < acc then curr else acc)
+howMuchFuel :: Num c => [c] -> c -> c
+howMuchFuel list to = sum . map (abs . subtract to) $ list
 
 leastFuelNeeded1 :: [Integer] -> Integer
 leastFuelNeeded1 initialList =
-  let allPositions = [listMin initialList .. listMax initialList]
-      distances = map (`howMuchFuel` initialList) allPositions
-   in listMin distances
+  let allPositions = [minimum initialList .. maximum initialList]
+      distances = map (howMuchFuel initialList) allPositions
+   in minimum distances
 
 leastFuelNeeded2 :: (Ord a, Enum a, Fractional a) => [a] -> a
 leastFuelNeeded2 initialList =
-  let allPositions = [listMin initialList .. listMax initialList]
+  let allPositions = [minimum initialList .. maximum initialList]
       distances = map (howMuchFuel2 initialList) allPositions
-   in listMin distances
+   in minimum distances
 
 howMuchFuel2 :: Fractional c => [c] -> c -> c
 howMuchFuel2 list to = sum . map (distance to) $ list
