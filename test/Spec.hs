@@ -12,30 +12,31 @@ import Test.QuickCheck (property)
 
 main :: IO ()
 main = hspec $ do
-  describe "Extra.choose" $ do
-    it "chooses all values from a list with all Justs" $ do
-      property $ \lst -> choose Just lst `shouldBe` (lst :: [Int])
-    it "chooses no values from a list full of Nothings" $ do
-      choose (const Nothing) [1 .. 10] `shouldBe` ([] :: [Int])
+  describe "Some extra functions" $ do
+    describe "Extra.choose" $ do
+      it "chooses all values from a list with all Justs" $ do
+        property $ \lst -> choose Just lst `shouldBe` (lst :: [Int])
+      it "chooses no values from a list full of Nothings" $ do
+        choose (const Nothing) [1 .. 10] `shouldBe` ([] :: [Int])
 
-  describe "Extra.readMaybeInt" $ do
-    it "converts stringed integers to Maybe Int" $ do
-      property $ \i -> readMaybeInt (show i) `shouldBe` (Just i :: Maybe Int)
-    it "returns Nothing when the string is not a number" $ do
-      readMaybeInt "a1234" `shouldBe` Nothing
-      readMaybeInt "a" `shouldBe` Nothing
-    it "returns Nothing when the string is empty" $ do
-      readMaybeInt "" `shouldBe` Nothing
+    describe "Extra.readMaybeInt" $ do
+      it "converts stringed integers to Maybe Int" $ do
+        property $ \i -> readMaybeInt (show i) `shouldBe` (Just i :: Maybe Int)
+      it "returns Nothing when the string is not a number" $ do
+        readMaybeInt "a1234" `shouldBe` Nothing
+        readMaybeInt "a" `shouldBe` Nothing
+      it "returns Nothing when the string is empty" $ do
+        readMaybeInt "" `shouldBe` Nothing
 
-  describe "Day05.getPoints" $ do
-    it "creates a horizontal line when the 'x' values are the same" $ do
-      property $ \x y1 y2 ->
-        let (smaller, bigger) = if y1 < y2 then (y1, y2) else (y2, y1)
-         in getPoints ((x, smaller), (x, bigger)) `shouldBe` zip (repeat x) [smaller .. bigger]
-    it "creates a vertical line when the 'y' values are the same" $ do
-      property $ \y x1 x2 ->
-        let (smaller, bigger) = if x1 < x2 then (x1, x2) else (x2, x1)
-         in getPoints ((smaller, y), (bigger, y)) `shouldBe` zip [smaller .. bigger] (repeat y)
+    describe "Day05.getPoints" $ do
+      it "creates a horizontal line when the 'x' values are the same" $ do
+        property $ \x y1 y2 ->
+          let (smaller, bigger) = if y1 < y2 then (y1, y2) else (y2, y1)
+           in getPoints ((x, smaller), (x, bigger)) `shouldBe` zip (repeat x) [smaller .. bigger]
+      it "creates a vertical line when the 'y' values are the same" $ do
+        property $ \y x1 x2 ->
+          let (smaller, bigger) = if x1 < x2 then (x1, x2) else (x2, x1)
+           in getPoints ((smaller, y), (bigger, y)) `shouldBe` zip [smaller .. bigger] (repeat y)
 
   describe "Final solutions" $ do
     describe "day 1" $ do
