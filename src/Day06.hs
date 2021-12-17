@@ -60,7 +60,7 @@ done6parsing = fmap done6part1 . toMaybe . runParse parseInput
     toMaybe (Right x) = Just x
 
 nth :: Int -> [a] -> a
-nth n list = list !! n
+nth = flip (!!)
 
 done6part1 :: [Int] -> Int
 done6part1 = done6 80
