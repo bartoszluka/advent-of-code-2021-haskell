@@ -6,8 +6,7 @@ import Day05 (done5part1, done5part2)
 import Day06 (done6parsing, done6part1, done6part2)
 import Day07 (done7part1, done7part2)
 import qualified Inputs
-import Test.Hspec
-import Test.QuickCheck
+import Test.Hspec (describe, hspec, it, shouldBe)
 
 main :: IO ()
 main = hspec $ do
