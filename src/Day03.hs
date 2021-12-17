@@ -1,43 +1,7 @@
 module Day03 where
 
 import Data.List (partition, transpose)
-import Extra
-
--- start binary
-
-data BinaryDigit = Zero | One
-  deriving (Eq, Enum)
-
-type BinaryNumber = [BinaryDigit]
-
-instance Show BinaryDigit where
-  show Zero = "0"
-  show One = "1"
-
-invert :: BinaryDigit -> BinaryDigit
-invert Zero = One
-invert One = Zero
-
-fromChar :: Char -> Maybe BinaryDigit
-fromChar '0' = Just Zero
-fromChar '1' = Just One
-fromChar _ = Nothing
-
-toInt :: BinaryDigit -> Int
-toInt Zero = 0
-toInt One = 1
-
-binToDecimal :: BinaryNumber -> Int
-binToDecimal = foldl (\acc curr -> (2 * acc) + toInt curr) 0
-
-fromString :: String -> Maybe BinaryNumber
-fromString =
-  foldr (\curr acc -> fromChar curr >>= addToMaybeList acc) (Just [])
-  where
-    addToMaybeList (Just list) item = Just (item : list)
-    addToMaybeList Nothing _ = Nothing
-
--- end binary
+import Extra (pairMap)
 
 mostCommonDigit :: [Int] -> Int
 mostCommonDigit number =
@@ -88,6 +52,7 @@ co2Scrubber pos rest = co2Scrubber (pos + 1) . filterDigitAtPosition pos (invert
   where
     digit = mostCommonDigitAtPosition pos rest
 
+lifeSupportRating :: [String] -> Int
 lifeSupportRating codes =
   co2Scrubber 0 numbers * oxygenGeneratorRating 0 numbers
   where

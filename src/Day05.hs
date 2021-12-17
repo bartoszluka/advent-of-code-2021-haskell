@@ -1,25 +1,15 @@
 module Day05 where
 
 import qualified Data.HashMap as HM
-import Extra (choose, readMaybeInt)
+import Extra (choose, readMaybeInt, toMaybe)
 import Inputs (day5)
-import Text.Parsec
-  ( ParseError,
-    char,
-    digit,
-    eof,
-    many1,
-    parse,
-    string,
-  )
+import Parsing (integer, runParse)
+import Text.Parsec (char, eof, string)
 import Text.Parsec.String (Parser)
 
-integer :: Parser Int
-integer = do
-  n <- many1 digit
-  return (read n)
-
 type Point = (Int, Int)
+
+type Vector = (Point, Point)
 
 pointParser :: Parser Point
 pointParser = do
@@ -28,8 +18,6 @@ pointParser = do
   y <- integer
   return (x, y)
 
-type Vector = (Point, Point)
-
 lineParser :: Parser Vector
 lineParser = do
   p1 <- pointParser
@@ -37,13 +25,6 @@ lineParser = do
   p2 <- pointParser
   eof
   return (p1, p2)
-
-toMaybe :: Either err ok -> Maybe ok
-toMaybe (Right x) = Just x
-toMaybe (Left _) = Nothing
-
-runParse :: Parser a -> String -> Either ParseError a
-runParse p = parse p ""
 
 toVectors :: [String] -> [Vector]
 toVectors = choose (toMaybe . runParse lineParser)

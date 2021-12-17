@@ -1,17 +1,7 @@
 module Day06 where
 
 import Control.Monad (liftM2)
-import Text.Parsec
-  ( ParseError,
-    char,
-    digit,
-    eof,
-    many1,
-    parse,
-    sepBy,
-    string,
-  )
-import Text.Parsec.String (Parser)
+import Parsing (parseInput, runParse)
 
 data SimulationDay = SimulationDay
   { counter0 :: Int,
@@ -57,22 +47,11 @@ fishCount sd =
     + counter7 sd
     + counter8 sd
 
-integer :: Parser Int
-integer = do
-  n <- many1 digit
-  return (read n)
-
-parseInput :: Parser [Int]
-parseInput = sepBy integer (char ',')
-
 simulateFish :: SimulationDay -> [SimulationDay]
 simulateFish currentDay = currentDay : simulateFish (nextDay currentDay)
 
 done6 :: (Num a, Eq a) => Int -> [a] -> Int
 done6 day = fishCount . nth day . simulateFish . fromList
-
-runParse :: Parser a -> String -> Either ParseError a
-runParse p = parse p ""
 
 done6parsing :: String -> Maybe Int
 done6parsing = fmap done6part1 . toMaybe . runParse parseInput

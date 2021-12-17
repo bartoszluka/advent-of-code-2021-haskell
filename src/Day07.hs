@@ -4,22 +4,8 @@ import Control.Monad (liftM2)
 import Data.List (genericLength, minimumBy)
 import GHC.Float (rationalToDouble)
 
-leastExpensive :: [Integer] -> Integer
-leastExpensive = round . avg . map toRational
-
-avg :: (Num a, Fractional a) => [a] -> a
-avg = calc sum (/) len
-  where
-    calc = flip liftM2
-    len = genericLength
-
 howMuchFuel :: Num c => c -> [c] -> c
 howMuchFuel to = sum . map (abs . subtract to)
-
-input :: [Integer]
-input = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14]
-
-smallInput = [16, 1, 2]
 
 listMax :: Ord a => [a] -> a
 listMax = foldl1 (\acc curr -> if curr > acc then curr else acc)

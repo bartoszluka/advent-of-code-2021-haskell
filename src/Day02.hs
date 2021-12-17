@@ -10,6 +10,7 @@ data Command
   | Down Int
   | Up Int
 
+parseCommand :: String -> Maybe Command
 parseCommand line =
   case words line of
     ["forward", val] -> case readMaybeInt val of

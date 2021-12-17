@@ -52,3 +52,7 @@ groupCount list = go list []
     go (x : xs) accumulated =
       let (equal, rest) = partition (x ==) xs
        in go rest ((x, length equal + 1) : accumulated)
+
+toMaybe :: Either err ok -> Maybe ok
+toMaybe (Right x) = Just x
+toMaybe (Left _) = Nothing

@@ -1,13 +1,11 @@
 module Day01 where
 
-import Extra
+import Extra (pairs, triplets)
 
--- 1602
 howManyIncreased :: [Int] -> Int
 howManyIncreased =
   length . filter (uncurry (<)) . pairs
 
--- 1633
 howManyIncreased2 :: [Int] -> Int
 howManyIncreased2 =
   howManyIncreased
