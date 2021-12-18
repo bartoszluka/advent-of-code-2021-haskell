@@ -1,7 +1,7 @@
-module Day05 (part1, part2, getPoints) where
+module Day05 (part1, part2) where
 
 import qualified Data.HashMap as HM
-import Extra (choose, readMaybeInt, toMaybe)
+import Extra (choose, createRange, readMaybeInt, toMaybe, zipToLonger)
 import Inputs (day5)
 import Parsing (integer, runParse)
 import Text.Parsec (char, eof, string)
@@ -35,14 +35,6 @@ getPoints ((x1, y1), (x2, y2)) =
   where
     xs = createRange x1 x2
     ys = createRange y1 y2
-    zipToLonger xs ys =
-        if length xs < length ys
-            then zip (cycle xs) ys
-            else zip xs (cycle ys)
-    createRange x y =
-        if x < y
-            then [x .. y]
-            else reverse [y .. x]
 
 toMap list = HM.fromListWith (+) zipped
   where

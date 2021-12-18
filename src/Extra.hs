@@ -14,31 +14,31 @@ pairMap f (a, b) = (f a, f b)
 -- [(first, second), (second, third), ...]
 pairs :: [a] -> [(a, a)]
 pairs = \case
-  [] -> []
-  all@(x : xs) -> zip all xs
+    [] -> []
+    all@(x : xs) -> zip all xs
 
 -- [(first, second, third), (second, third, fourth), ...]
 triplets :: [a] -> [(a, a, a)]
 triplets = \case
-  [] -> []
-  [_] -> []
-  all@(_ : noFirst@(_ : rest)) -> zip3 all noFirst rest
+    [] -> []
+    [_] -> []
+    all@(_ : noFirst@(_ : rest)) -> zip3 all noFirst rest
 
 choose :: (a -> Maybe b) -> [a] -> [b]
 choose chooser =
-  foldr
-    ( \x acc -> case chooser x of
-        Nothing -> acc
-        Just x -> x : acc
-    )
-    []
+    foldr
+        ( \x acc -> case chooser x of
+            Nothing -> acc
+            Just x -> x : acc
+        )
+        []
 
 itemOf :: Int -> [a] -> Maybe a
 index `itemOf` list =
-  let len = length list
-   in if abs index > len
-        then Nothing
-        else Just (list !! (index `mod` len))
+    let len = length list
+     in if abs index > len
+            then Nothing
+            else Just (list !! (index `mod` len))
 
 at = flip itemOf
 
@@ -50,9 +50,21 @@ groupCount list = go list []
     go :: Eq a => [a] -> [(a, Int)] -> [(a, Int)]
     go [] accumulated = accumulated
     go (x : xs) accumulated =
-      let (equal, rest) = partition (x ==) xs
-       in go rest ((x, length equal + 1) : accumulated)
+        let (equal, rest) = partition (x ==) xs
+         in go rest ((x, length equal + 1) : accumulated)
 
 toMaybe :: Either err ok -> Maybe ok
 toMaybe (Right x) = Just x
 toMaybe (Left _) = Nothing
+
+createRange :: (Ord a, Enum a) => a -> a -> [a]
+createRange x y =
+    if x < y
+        then [x .. y]
+        else reverse [y .. x]
+
+zipToLonger :: [a] -> [b] -> [(a, b)]
+zipToLonger xs ys =
+    if length xs < length ys
+        then zip (cycle xs) ys
+        else zip xs (cycle ys)

@@ -1,3 +1,4 @@
+import Data.List.NonEmpty (NonEmpty)
 import qualified Day01
 import qualified Day02
 import qualified Day03
@@ -5,7 +6,7 @@ import qualified Day04
 import qualified Day05
 import qualified Day06
 import qualified Day07
-import Extra (choose, readMaybeInt)
+import Extra (choose, createRange, readMaybeInt, zipToLonger)
 import qualified Inputs
 import Test.Hspec (describe, hspec, it, shouldBe)
 import Test.QuickCheck (property)
@@ -28,15 +29,25 @@ main = hspec $ do
             it "returns Nothing when the string is empty" $ do
                 readMaybeInt "" `shouldBe` Nothing
 
-        describe "Day05.getPoints" $ do
-            it "creates a horizontal line when the 'x' values are the same" $ do
-                property $ \x y1 y2 ->
-                    let (smaller, bigger) = if y1 < y2 then (y1, y2) else (y2, y1)
-                     in Day05.getPoints ((x, smaller), (x, bigger)) `shouldBe` zip (repeat x) [smaller .. bigger]
-            it "creates a vertical line when the 'y' values are the same" $ do
-                property $ \y x1 x2 ->
-                    let (smaller, bigger) = if x1 < x2 then (x1, x2) else (x2, x1)
-                     in Day05.getPoints ((smaller, y), (bigger, y)) `shouldBe` zip [smaller .. bigger] (repeat y)
+        describe "Extra.zipToLonger" $ do
+            it "zips singleton list and another list" $ do
+                property $ \x list -> case list of
+                    [] -> () `shouldBe` ()
+                    notEmpty@(_ : _) -> zipToLonger [x] notEmpty `shouldBe` (zip (repeat x) notEmpty :: [(Int, Int)])
+
+            it "returns a list of the same length as the longer one" $ do
+                let longer = [1 .. 5]
+                length (zipToLonger [1] longer) `shouldBe` length longer
+
+        describe "Extra.createRange" $ do
+            it "acts as a [a..b] when a <= b" $ do
+                property $ \a b ->
+                    let (smaller, bigger) = if a <= b then (a, b) else (b, a)
+                     in createRange smaller bigger `shouldBe` ([smaller .. bigger] :: [Int])
+            it "creates a reversed list when a >= b" $ do
+                property $ \a b ->
+                    let (smaller, bigger) = if a <= b then (a, b) else (b, a)
+                     in createRange bigger smaller `shouldBe` (reverse [smaller .. bigger] :: [Int])
 
     describe "Final solutions" $ do
         describe "day 1" $ do
