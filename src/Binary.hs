@@ -1,13 +1,13 @@
 module Binary where
 
 data BinaryDigit = Zero | One
-  deriving (Eq, Enum)
+    deriving (Eq, Enum)
 
 type BinaryNumber = [BinaryDigit]
 
 instance Show BinaryDigit where
-  show Zero = "0"
-  show One = "1"
+    show Zero = "0"
+    show One = "1"
 
 invert :: BinaryDigit -> BinaryDigit
 invert Zero = One
@@ -27,7 +27,7 @@ binToDecimal = foldl (\acc curr -> (2 * acc) + toInt curr) 0
 
 fromString :: String -> Maybe BinaryNumber
 fromString =
-  foldr (\curr acc -> fromChar curr >>= addToMaybeList acc) (Just [])
+    foldr (\curr acc -> fromChar curr >>= addToMaybeList acc) (Just [])
   where
     addToMaybeList (Just list) item = Just (item : list)
     addToMaybeList Nothing _ = Nothing
