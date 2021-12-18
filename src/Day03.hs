@@ -1,11 +1,11 @@
-module Day03 where
+module Day03 (part1, part2) where
 
 import Data.List (partition, transpose)
 import Extra (pairMap)
 
 mostCommonDigit :: [Int] -> Int
 mostCommonDigit number =
-  if ones >= zeros then 1 else 0
+    if ones >= zeros then 1 else 0
   where
     (ones, zeros) = pairMap length . partition (1 ==) $ number
 
@@ -24,7 +24,7 @@ invertDigits = map invertDigit
 
 powerConsumed :: [String] -> Int
 powerConsumed codes =
-  gamma * epsilon
+    gamma * epsilon
   where
     digits = map mostCommonDigit . transpose . map (map toBinaryDigits) $ codes
     gamma = toDecimal digits
@@ -54,6 +54,12 @@ co2Scrubber pos rest = co2Scrubber (pos + 1) . filterDigitAtPosition pos (invert
 
 lifeSupportRating :: [String] -> Int
 lifeSupportRating codes =
-  co2Scrubber 0 numbers * oxygenGeneratorRating 0 numbers
+    co2Scrubber 0 numbers * oxygenGeneratorRating 0 numbers
   where
     numbers = map (map toBinaryDigits) codes
+
+part1 :: [String] -> Int
+part1 = powerConsumed
+
+part2 :: [String] -> Int
+part2 = lifeSupportRating

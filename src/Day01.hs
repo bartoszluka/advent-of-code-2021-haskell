@@ -1,15 +1,17 @@
-module Day01 where
+module Day01 (part1, part2) where
 
 import Extra (pairs, triplets)
 
 howManyIncreased :: [Int] -> Int
-howManyIncreased =
-  length . filter (uncurry (<)) . pairs
+howManyIncreased = length . filter (uncurry (<)) . pairs
 
 howManyIncreased2 :: [Int] -> Int
-howManyIncreased2 =
-  howManyIncreased
-    . map multiply
-    . triplets
+howManyIncreased2 = howManyIncreased . map multiply . triplets
   where
     multiply (a, b, c) = a + b + c
+
+part1 :: [Int] -> Int
+part1 = howManyIncreased
+
+part2 :: [Int] -> Int
+part2 = howManyIncreased2
