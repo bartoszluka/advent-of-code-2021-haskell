@@ -1,9 +1,8 @@
 module Day06 (part1, part2) where
 
 import Control.Monad (liftM2)
-import Data.Array (Array)
-import Data.Array.IArray (
-    Array,
+import Data.Array.Unboxed (
+    UArray,
     accumArray,
     elems,
     ixmap,
@@ -12,7 +11,7 @@ import Data.Array.IArray (
  )
 import Parsing (parseInput, runParse)
 
-type SimulationDay = Array Int Int
+type SimulationDay = UArray Int Int
 
 nextDay :: SimulationDay -> SimulationDay
 nextDay = updateSixth . ixmap (0, 8) (decMod 9)
