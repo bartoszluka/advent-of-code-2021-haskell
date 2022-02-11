@@ -1,3 +1,6 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
+import Data.List (genericLength, sort)
 import Data.List.NonEmpty (NonEmpty)
 import qualified Day01
 import qualified Day02
@@ -6,10 +9,11 @@ import qualified Day04
 import qualified Day05
 import qualified Day06
 import qualified Day07
-import Extra (choose, createRange, readMaybeInt, zipToLonger)
+import Extra (between, choose, count, count', createRange, median, readMaybeInt, selectKth, zipToLonger)
 import qualified Inputs
 import Test.Hspec (describe, hspec, it, shouldBe)
-import Test.QuickCheck (property)
+import Test.QuickCheck (property, (===), (==>))
+import Text.Parsec.Language (javaStyle)
 
 main :: IO ()
 main = hspec $ do
@@ -31,9 +35,9 @@ main = hspec $ do
 
         describe "Extra.zipToLonger" $ do
             it "zips singleton list and another list" $ do
-                property $ \x list -> case list of
-                    [] -> () `shouldBe` ()
-                    notEmpty@(_ : _) -> zipToLonger [x] notEmpty `shouldBe` (zip (repeat x) notEmpty :: [(Int, Int)])
+                property $ \(x :: Int) (list :: [Int]) ->
+                    not (null list)
+                        ==> zipToLonger [x] list `shouldBe` zip (repeat x) list
 
             it "returns a list of the same length as the longer one" $ do
                 let longer = [1 .. 5]
@@ -48,6 +52,28 @@ main = hspec $ do
                 property $ \a b ->
                     let (smaller, bigger) = if a <= b then (a, b) else (b, a)
                      in createRange bigger smaller `shouldBe` (reverse [smaller .. bigger] :: [Int])
+
+        describe "Extra.selectKth" $ do
+            it "gets kth element from a list as if the list was sorted" $ do
+                property $ \k (list :: [Int]) ->
+                    k `between` (1, length list) && not (null list)
+                        ==> selectKth k list
+                            `shouldBe` sort list !! max 0 (k - 1)
+
+        describe "Extra.median" $ do
+            it "returns the median of a list (if the length is even then it returns the first of the 2 center elements)" $ do
+                property $ \(list :: [Int]) ->
+                    not (null list)
+                        ==> median list `shouldBe` sort list !! ceiling (genericLength list / 2 - 1)
+
+        describe "Extra.count" $ do
+            it "returns the length if the predicate is always true (const True)" $ do
+                property $ \(list :: [Int]) ->
+                    count (const True) list `shouldBe` length list
+
+            it "acts as a combination of `lenght` and `filter`" $ do
+                property $ \(list :: [Int]) ->
+                    count even list `shouldBe` count' even list
 
     describe "Final solutions" $ do
         describe "day 1" $ do
