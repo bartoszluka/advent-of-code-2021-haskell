@@ -2,6 +2,7 @@
 
 module Extra where
 
+import Control.Monad (liftM2)
 import Data.List (genericLength, partition)
 import Data.Monoid
 import Text.Read (readMaybe)
@@ -85,7 +86,6 @@ selectKth k all@(x : xs)
     (less, equal, greater) = partitionCompare x all
     [lenLess, lenEqual] = len <$> [less, equal]
     len = genericLength
-
 biggerLength :: [a] -> [a] -> [a]
 biggerLength xs ys = if length xs > length ys then xs else ys
 
@@ -110,3 +110,9 @@ count predicate = getSum . foldMap (Sum . toInt . predicate)
 
 between :: Ord a => a -> (a, a) -> Bool
 n `between` (lower, upper) = lower <= n && n <= upper
+
+average :: Fractional a => [a] -> a
+average = calc sum (/) len
+  where
+    calc = flip liftM2
+    len = genericLength
