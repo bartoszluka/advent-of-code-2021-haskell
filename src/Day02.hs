@@ -18,20 +18,15 @@ parseCommand line = do
     case (direction, number) of
         ("forward", n) -> toCommand Forward n
         ("down", n) -> toCommand Down n
-        ("up", n) -> toCommand Down n
+        ("up", n) -> toCommand Up n
         _ -> Nothing
   where
     splitWords input = case words input of
         [direction, number] -> Just (direction, number)
         _ -> Nothing
-    toCommand command = toString .> readMaybe .> fmap command
 
-depthTimesTravelled :: [Text] -> Int
-depthTimesTravelled lines =
-    horizontal * depth
-  where
-    (horizontal, depth) = foldCommands parsed
-    parsed = choose parseCommand lines
+    toCommand :: (Int -> Command) -> Text -> Maybe Command
+    toCommand command = toString .> readMaybe .> fmap command
 
 foldCommands :: [Command] -> (Int, Int)
 foldCommands =
@@ -42,6 +37,13 @@ foldCommands =
             Down value -> (horiz, depth + value)
         )
         (0, 0)
+
+depthTimesTravelled :: [Text] -> Int
+depthTimesTravelled lines =
+    horizontal * depth
+  where
+    (horizontal, depth) = foldCommands parsed
+    parsed = choose parseCommand lines
 
 foldCommands2 :: [Command] -> (Int, Int, Int)
 foldCommands2 =
