@@ -8,8 +8,8 @@ import Data.List (genericLength, minimumBy)
 import Extra (average, median)
 import GHC.Float (int2Double, rationalToDouble)
 
-howMuchFuel :: Num c => (t1 -> t2 -> c) -> [t1] -> t2 -> c
-howMuchFuel distance list to = sum . map (\from -> distance from to) $ list
+howMuchFuel :: Num c => (a -> b -> c) -> [a] -> b -> c
+howMuchFuel distance froms to = sum . map (\from -> distance from to) $ froms
 
 leastFuelNeeded1 :: [Integer] -> Integer
 leastFuelNeeded1 =
