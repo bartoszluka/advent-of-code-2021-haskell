@@ -6,9 +6,9 @@ howManyIncreased :: [Int] -> Int
 howManyIncreased = length . filter (uncurry (<)) . pairs
 
 howManyIncreased2 :: [Int] -> Int
-howManyIncreased2 = howManyIncreased . map multiply . triplets
+howManyIncreased2 = howManyIncreased . map sumUp . triplets
   where
-    multiply (a, b, c) = a + b + c
+    sumUp (a, b, c) = a + b + c
 
 part1 :: [Int] -> Int
 part1 = howManyIncreased
