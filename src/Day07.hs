@@ -4,9 +4,7 @@
 module Day07 (part1, part2) where
 
 import Control.Monad (liftM2)
-import Data.List (genericLength, minimumBy)
 import Extra (average, median)
-import GHC.Float (int2Double, rationalToDouble)
 
 howMuchFuel :: Num c => (a -> b -> c) -> [a] -> b -> c
 howMuchFuel distance froms to = sum . map (\from -> distance from to) $ froms

@@ -3,12 +3,8 @@
 module Extra where
 
 import Control.Monad (liftM2)
-import Data.List (genericLength, partition)
-import Data.Monoid
+import Data.List (partition)
 import Text.Read (readMaybe)
-
-readMaybeInt :: String -> Maybe Int
-readMaybeInt = readMaybe
 
 pairMap :: (a -> b) -> (a, a) -> (b, b)
 pairMap f (a, b) = (f a, f b)
@@ -35,16 +31,7 @@ choose chooser =
         )
         []
 
-itemOf :: Int -> [a] -> Maybe a
-index `itemOf` list =
-    let len = length list
-     in if abs index > len
-            then Nothing
-            else Just (list !! (index `mod` len))
-
-at = flip itemOf
-
-at1 list index = (index - 1) `itemOf` list
+at1 list index = list !!? (index - 1)
 
 groupCount :: Eq a => [a] -> [(a, Int)]
 groupCount list = go list []
@@ -76,8 +63,8 @@ median list = selectKth half list
   where
     half = ceiling $ genericLength list / 2
 
-selectKth :: (Integral i, Ord a) => i -> [a] -> a
-selectKth _ [] = error "list is empty"
+selectKth :: (Integral i, Ord a, Show i) => i -> [a] -> a
+selectKth k [] = error $ "k = " <> show k <> " is greater than the length"
 selectKth k all@(x : xs)
     | k <= lenLess = selectKth k less
     | k <= lenLess + lenEqual = x
@@ -86,6 +73,7 @@ selectKth k all@(x : xs)
     (less, equal, greater) = partitionCompare x all
     [lenLess, lenEqual] = len <$> [less, equal]
     len = genericLength
+
 biggerLength :: [a] -> [a] -> [a]
 biggerLength xs ys = if length xs > length ys then xs else ys
 

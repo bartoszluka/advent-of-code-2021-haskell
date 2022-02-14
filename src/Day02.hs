@@ -1,57 +1,41 @@
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module Day02 (part1, part2) where
+module Day02 (part1, part2, parseCommand) where
 
-import Data.List (partition)
-import Extra (choose, readMaybeInt)
+import Extra (choose)
+import Prelude hiding (Down)
 
 data Command
     = Forward Int
     | Down Int
     | Up Int
+    deriving (Eq, Show)
 
-parseCommand :: String -> Maybe Command
-parseCommand line =
-    case words line of
-        ["forward", val] -> case readMaybeInt val of
-            Just int -> Just $ Forward int
-            Nothing -> Nothing
-        ["down", val] -> case readMaybeInt val of
-            Just int -> Just $ Down int
-            Nothing -> Nothing
-        ["up", val] -> case readMaybeInt val of
-            Just int -> Just $ Up int
-            Nothing -> Nothing
+parseCommand :: Text -> Maybe Command
+parseCommand line = do
+    (direction, number) <- splitWords line
+    case (direction, number) of
+        ("forward", n) -> toCommand Forward n
+        ("down", n) -> toCommand Down n
+        ("up", n) -> toCommand Down n
         _ -> Nothing
+  where
+    splitWords input = case words input of
+        [direction, number] -> Just (direction, number)
+        _ -> Nothing
+    toCommand command = toString .> readMaybe .> fmap command
 
-splitCommands :: [Command] -> ([Command], [Command])
-splitCommands =
-    partition
-        ( \case
-            Forward _ -> True
-            _ -> False
-        )
-
-sumCommands :: [Command] -> Int
-sumCommands =
-    sum
-        . map
-            ( \case
-                Forward int -> int
-                Down int -> int
-                Up int -> negate int
-            )
-
-depthTimesTravelled :: [String] -> Int
+depthTimesTravelled :: [Text] -> Int
 depthTimesTravelled lines =
     horizontal * depth
   where
-    parsed = choose parseCommand lines
     (horizontal, depth) = foldCommands parsed
+    parsed = choose parseCommand lines
 
 foldCommands :: [Command] -> (Int, Int)
 foldCommands =
-    foldl
+    foldl'
         ( \(horiz, depth) -> \case
             Forward value -> (horiz + value, depth)
             Up value -> (horiz, depth - value)
@@ -61,7 +45,7 @@ foldCommands =
 
 foldCommands2 :: [Command] -> (Int, Int, Int)
 foldCommands2 =
-    foldl
+    foldl'
         ( \(horiz, depth, aim) -> \case
             Down value -> (horiz, depth, aim + value)
             Up value -> (horiz, depth, aim - value)
@@ -69,15 +53,15 @@ foldCommands2 =
         )
         (0, 0, 0)
 
-depthTimesTravelled2 :: [String] -> Int
+depthTimesTravelled2 :: [Text] -> Int
 depthTimesTravelled2 lines =
     horizontal * depth
   where
     parsed = choose parseCommand lines
     (horizontal, depth, _) = foldCommands2 parsed
 
-part1 :: [String] -> Int
+part1 :: [Text] -> Int
 part1 = depthTimesTravelled
 
-part2 :: [String] -> Int
+part2 :: [Text] -> Int
 part2 = depthTimesTravelled2

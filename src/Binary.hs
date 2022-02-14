@@ -1,5 +1,7 @@
 module Binary where
 
+import Text.Show (Show, show)
+
 data BinaryDigit = Zero | One
     deriving (Eq, Enum)
 
@@ -23,11 +25,8 @@ toInt Zero = 0
 toInt One = 1
 
 binToDecimal :: BinaryNumber -> Int
-binToDecimal = foldl (\acc curr -> (2 * acc) + toInt curr) 0
+binToDecimal = foldl' (\acc curr -> (2 * acc) + toInt curr) 0
 
 fromString :: String -> Maybe BinaryNumber
 fromString =
-    foldr (\curr acc -> fromChar curr >>= addToMaybeList acc) (Just [])
-  where
-    addToMaybeList (Just list) item = Just (item : list)
-    addToMaybeList Nothing _ = Nothing
+    mapM fromChar

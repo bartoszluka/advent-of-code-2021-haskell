@@ -1,4 +1,4 @@
-module Day06 (part1, part2) where
+module Day06 (part1, part1parsing, part2) where
 
 import Control.Monad (liftM2)
 import Data.Array.Unboxed (
@@ -9,7 +9,7 @@ import Data.Array.Unboxed (
     (!),
     (//),
  )
-import Parsing (parseInput, runParse)
+import Relude.Unsafe ((!!))
 
 type SimulationDay = UArray Int Int
 
@@ -19,8 +19,8 @@ nextDay = updateSixth . ixmap (0, 8) (decMod 9)
     decMod maxValue n = (n + 1) `mod` maxValue
     updateSixth arr = arr // [(6, arr ! 6 + arr ! 8)]
 
-fromList :: [Int] -> SimulationDay
-fromList =
+toSimulation :: [Int] -> SimulationDay
+toSimulation =
     accumArray increment 0 (0, 8) . map duplicate
   where
     duplicate a = (a, a)
@@ -33,16 +33,19 @@ simulateFish :: SimulationDay -> [SimulationDay]
 simulateFish currentDay = currentDay : simulateFish (nextDay currentDay)
 
 done :: Int -> [Int] -> Int
-done day = fishCount . nth day . simulateFish . fromList
-
-done6parsing :: String -> Maybe Int
-done6parsing = fmap part1 . toMaybe . runParse parseInput
-  where
-    toMaybe (Left _) = Nothing
-    toMaybe (Right x) = Just x
+done day = fishCount . nth day . simulateFish . toSimulation
 
 nth :: Int -> [a] -> a
 nth = flip (!!)
+
+done6parsing :: Text -> Maybe Int
+done6parsing = fmap part1 . readMaybe . toString . surroundWithBrackets
+  where
+    surroundWithBrackets :: Text -> Text
+    surroundWithBrackets txt = "[" <> txt <> "]"
+
+part1parsing :: Text -> Maybe Int
+part1parsing = done6parsing
 
 part1 :: [Int] -> Int
 part1 = done 80

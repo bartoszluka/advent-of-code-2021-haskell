@@ -1,7 +1,7 @@
 module Day05 (part1, part2) where
 
-import qualified Data.HashMap as HM
-import Extra (choose, createRange, readMaybeInt, toMaybe, zipToLonger)
+import qualified Data.Map as HM
+import Extra (choose, createRange, toMaybe, zipToLonger)
 import Inputs (day5)
 import Parsing (integer, runParse)
 import Text.Parsec (char, eof, string)

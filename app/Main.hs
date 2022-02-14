@@ -2,4 +2,4 @@ module Main where
 
 main :: IO ()
 main = do
-  print "hello world"
+    print "hello world"

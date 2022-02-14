@@ -1,6 +1,7 @@
 module Day03 (part1, part2) where
 
-import Data.List (partition, transpose)
+import Control.Monad (liftM2)
+import Data.List (partition)
 import Extra (pairMap)
 
 mostCommonDigit :: [Int] -> Int
@@ -14,7 +15,7 @@ toBinaryDigits '1' = 1
 toBinaryDigits _ = 0
 
 toDecimal :: [Int] -> Int
-toDecimal = foldl (\acc curr -> 2 * acc + curr) 0
+toDecimal = foldl' (\acc curr -> 2 * acc + curr) 0
 
 invertDigit :: Int -> Int
 invertDigit i = if i == 0 then 1 else 0
@@ -23,43 +24,61 @@ invertDigits :: [Int] -> [Int]
 invertDigits = map invertDigit
 
 powerConsumed :: [String] -> Int
-powerConsumed codes =
-    gamma * epsilon
+powerConsumed = calc gamma (*) epsilon
   where
-    digits = map mostCommonDigit . transpose . map (map toBinaryDigits) $ codes
-    gamma = toDecimal digits
-    epsilon = toDecimal . invertDigits $ digits
+    digits = map (map toBinaryDigits) .> transpose .> map mostCommonDigit
+    gamma = digits .> toDecimal
+    epsilon = digits .> invertDigits .> toDecimal
+    calc = flip liftM2
 
--- unsafe
-mostCommonDigitAtPosition :: Int -> [[Int]] -> Int
-mostCommonDigitAtPosition pos = mostCommonDigit . (!! pos) . transpose
+mostCommonDigitAtPosition :: Int -> [[Int]] -> Maybe Int
+mostCommonDigitAtPosition pos =
+    transpose
+        .> (!!? pos)
+        .> (mostCommonDigit <$>)
 
--- unsafe
 filterDigitAtPosition :: Int -> Int -> [[Int]] -> [[Int]]
-filterDigitAtPosition pos mostCommon = filter (\number -> (number !! pos) == mostCommon)
-
-oxygenGeneratorRating :: Int -> [[Int]] -> Int
-oxygenGeneratorRating _ [number] = toDecimal number
-oxygenGeneratorRating _ [] = 0
-oxygenGeneratorRating pos rest = oxygenGeneratorRating (pos + 1) . filterDigitAtPosition pos digit $ rest
+filterDigitAtPosition pos mostCommon = filter isMostCommon
   where
-    digit = mostCommonDigitAtPosition pos rest
+    isMostCommon digits = case digits !!? pos of
+        Just digit -> digit == mostCommon
+        Nothing -> False
 
-co2Scrubber :: Int -> [[Int]] -> Int
-co2Scrubber _ [number] = toDecimal number
-co2Scrubber _ [] = 0
-co2Scrubber pos rest = co2Scrubber (pos + 1) . filterDigitAtPosition pos (invertDigit digit) $ rest
-  where
-    digit = mostCommonDigitAtPosition pos rest
+    -- point free implementation
+    isMostCommon' = lookAt pos .> (<$>) (isEqual mostCommon) .> defaultTo False
+    isEqual = (==)
+    lookAt = flip (!!?)
+    defaultTo = fromMaybe
 
-lifeSupportRating :: [String] -> Int
-lifeSupportRating codes =
-    co2Scrubber 0 numbers * oxygenGeneratorRating 0 numbers
+oxygenGeneratorRating :: Int -> [[Int]] -> Maybe Int
+oxygenGeneratorRating _ [number] = toDecimal number |> Just
+oxygenGeneratorRating _ [] = Nothing
+oxygenGeneratorRating pos rest = do
+    digit <- mostCommonDigitAtPosition pos rest
+    rest
+        |> filterDigitAtPosition pos digit
+        |> oxygenGeneratorRating (pos + 1)
+
+co2Scrubber :: Int -> [[Int]] -> Maybe Int
+co2Scrubber _ [] = Nothing
+co2Scrubber _ [number] = toDecimal number |> Just
+co2Scrubber pos rest =
+    do
+        digit <- mostCommonDigitAtPosition pos rest
+        rest
+            |> filterDigitAtPosition pos (invertDigit digit)
+            |> co2Scrubber (pos + 1)
+
+lifeSupportRating :: [String] -> Maybe Int
+lifeSupportRating codes = calc co2 (*) oxygen
   where
+    co2 = co2Scrubber 0 numbers
+    oxygen = oxygenGeneratorRating 0 numbers
     numbers = map (map toBinaryDigits) codes
+    calc = flip liftM2
 
 part1 :: [String] -> Int
 part1 = powerConsumed
 
-part2 :: [String] -> Int
+part2 :: [String] -> Maybe Int
 part2 = lifeSupportRating

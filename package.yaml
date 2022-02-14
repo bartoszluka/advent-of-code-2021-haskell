@@ -1,14 +1,13 @@
 name: aoc2021
 version: 0.1.0.0
-github: 'githubuser/aoc2021'
-license: BSD3
-author: 'Author name here'
-maintainer: 'example@example.com'
-copyright: '2021 Author name here'
+github: 'bartoszluka/aoc2021'
+license: MIT
+author: 'Bartosz Łuka'
+maintainer: 'bartoszluka1@gmail.com'
+copyright: '2021 Bartosz Łuka'
 
 extra-source-files:
   - README.md
-  - ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -20,11 +19,13 @@ extra-source-files:
 description: Please see the README on GitHub at <https://github.com/githubuser/aoc2021#readme>
 
 dependencies:
-  - base >= 4.7 && < 5
+  - base-noprelude >= 4.13 && < 5
   - split
   - parsec
-  - hashmap
   - array
+  - relude
+  - flow
+  - containers
 
 library:
   source-dirs: src
@@ -54,3 +55,6 @@ tests:
       - hspec-contrib
       - QuickCheck
       - HUnit
+
+default-extensions:
+  - OverloadedStrings

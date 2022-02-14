@@ -9,8 +9,9 @@ import qualified Day04
 import qualified Day05
 import qualified Day06
 import qualified Day07
-import Extra (between, choose, count, count', createRange, median, readMaybeInt, selectKth, zipToLonger)
+import Extra (between, choose, count, count', createRange, median, selectKth, zipToLonger)
 import qualified Inputs
+import Relude.Unsafe ((!!))
 import Test.Hspec (describe, hspec, it, shouldBe)
 import Test.QuickCheck (property, (===), (==>))
 import Text.Parsec.Language (javaStyle)
@@ -23,15 +24,6 @@ main = hspec $ do
                 property $ \lst -> choose Just lst `shouldBe` (lst :: [Int])
             it "chooses no values from a list full of Nothings" $ do
                 choose (const Nothing) [1 .. 10] `shouldBe` ([] :: [Int])
-
-        describe "Extra.readMaybeInt" $ do
-            it "converts stringed integers to Maybe Int" $ do
-                property $ \i -> readMaybeInt (show i) `shouldBe` (Just i :: Maybe Int)
-            it "returns Nothing when the string is not a number" $ do
-                readMaybeInt "a1234" `shouldBe` Nothing
-                readMaybeInt "a" `shouldBe` Nothing
-            it "returns Nothing when the string is empty" $ do
-                readMaybeInt "" `shouldBe` Nothing
 
         describe "Extra.zipToLonger" $ do
             it "zips singleton list and another list" $ do
@@ -93,7 +85,7 @@ main = hspec $ do
                 Day03.part1 Inputs.day3 `shouldBe` (3985686 :: Int)
 
             it "part 2" $ do
-                Day03.part2 Inputs.day3 `shouldBe` (2555739 :: Int)
+                Day03.part2 Inputs.day3 `shouldBe` Just (2555739 :: Int)
 
         describe "day 4" $ do
             it "part 1" $ do
@@ -113,8 +105,8 @@ main = hspec $ do
             it "part 1 from list of ints" $ do
                 Day06.part1 Inputs.day6list `shouldBe` (365862 :: Int)
 
-            -- it "part 1 from strings" $ do
-            --     Day06.part2 Inputs.day6 `shouldBe` Just (365862 :: Int)
+            it "part 1 from strings" $ do
+                Day06.part1parsing Inputs.day6 `shouldBe` Just (365862 :: Int)
 
             it "part 2" $ do
                 Day06.part2 Inputs.day6list `shouldBe` (1653250886439 :: Int)

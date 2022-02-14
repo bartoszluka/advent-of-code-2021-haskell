@@ -1,7 +1,8 @@
 module Parsing where
 
-import Text.Parsec
-  ( ParseError,
+import Relude.Unsafe (read)
+import Text.Parsec (
+    ParseError,
     char,
     digit,
     eof,
@@ -9,13 +10,14 @@ import Text.Parsec
     parse,
     sepBy,
     string,
-  )
+ )
 import Text.Parsec.String (Parser)
+import Text.Read (Read (readList))
 
 integer :: Parser Int
 integer = do
-  n <- many1 digit
-  return (read n)
+    n <- many1 digit
+    return (read n)
 
 parseInput :: Parser [Int]
 parseInput = sepBy integer (char ',')
