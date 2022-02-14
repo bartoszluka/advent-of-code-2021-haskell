@@ -1,7 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-import Data.List (genericLength, sort)
-import Data.List.NonEmpty (NonEmpty)
 import qualified Day01
 import qualified Day02
 import qualified Day03
@@ -14,14 +12,13 @@ import qualified Inputs
 import Relude.Unsafe ((!!))
 import Test.Hspec (describe, hspec, it, shouldBe)
 import Test.QuickCheck (property, (===), (==>))
-import Text.Parsec.Language (javaStyle)
 
 main :: IO ()
 main = hspec $ do
     describe "Some extra functions" $ do
         describe "Extra.choose" $ do
             it "chooses all values from a list with all Justs" $ do
-                property $ \lst -> choose Just lst `shouldBe` (lst :: [Int])
+                property $ \(list :: [Int]) -> choose Just list `shouldBe` list
             it "chooses no values from a list full of Nothings" $ do
                 choose (const Nothing) [1 .. 10] `shouldBe` ([] :: [Int])
 
@@ -67,7 +64,7 @@ main = hspec $ do
                 property $ \(list :: [Int]) ->
                     count even list `shouldBe` count' even list
 
-    describe "Final solutions" $ do
+    describe "Solutions to each day" $ do
         describe "day 1" $ do
             it "part 1" $ do
                 Day01.part1 Inputs.day1 `shouldBe` (1602 :: Int)
