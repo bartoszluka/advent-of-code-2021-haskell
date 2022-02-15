@@ -41,9 +41,10 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-allow-newer: true
 extra-deps:
-  - base-noprelude-4.13.0.0@sha256:3cccbfda38e1422ca5cc436d58858ba51ff9114d2ed87915a6569be11e4e5a90,6842
+  # base-noprelude v4.14.3
+  - git: https://github.com/serokell/base-noprelude.git
+    commit: 1282e0b992b00089d55228a2aa9edc4a3581c319
 
 # - hspec
 # - hspec-contrib

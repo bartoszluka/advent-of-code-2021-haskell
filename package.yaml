@@ -19,8 +19,7 @@ extra-source-files:
 description: Please see the README on GitHub at <https://github.com/githubuser/aoc2021#readme>
 
 dependencies:
-  - base-noprelude >= 4.13 && < 5
-  - split
+  - base-noprelude >= 4.14.3 && < 5
   - parsec
   - array
   - relude

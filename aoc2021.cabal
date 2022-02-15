@@ -44,12 +44,11 @@ library
       OverloadedStrings
   build-depends:
       array
-    , base-noprelude >=4.13 && <5
+    , base-noprelude >=4.14.3 && <5
     , containers
     , flow
     , parsec
     , relude
-    , split
   default-language: Haskell2010
 
 executable aoc2021-exe
@@ -64,12 +63,11 @@ executable aoc2021-exe
   build-depends:
       aoc2021
     , array
-    , base-noprelude >=4.13 && <5
+    , base-noprelude >=4.14.3 && <5
     , containers
     , flow
     , parsec
     , relude
-    , split
   default-language: Haskell2010
 
 test-suite aoc2021-test
@@ -87,12 +85,11 @@ test-suite aoc2021-test
     , QuickCheck
     , aoc2021
     , array
-    , base-noprelude >=4.13 && <5
+    , base-noprelude >=4.14.3 && <5
     , containers
     , flow
     , hspec
     , hspec-contrib
     , parsec
     , relude
-    , split
   default-language: Haskell2010

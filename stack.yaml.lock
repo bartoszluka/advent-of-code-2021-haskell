@@ -5,12 +5,16 @@
 
 packages:
 - completed:
-    hackage: base-noprelude-4.13.0.0@sha256:3cccbfda38e1422ca5cc436d58858ba51ff9114d2ed87915a6569be11e4e5a90,6842
+    name: base-noprelude
+    version: 4.14.3.0
+    git: https://github.com/serokell/base-noprelude.git
     pantry-tree:
-      size: 112
-      sha256: 90db92c8401880187ce642c5345407bcbd9546ea235524dd445cab2566ee3db1
+      size: 823
+      sha256: 1f7bf8a841bc840b332d409dfeee4b68edd192291f76530faceddcfd61dfc429
+    commit: 1282e0b992b00089d55228a2aa9edc4a3581c319
   original:
-    hackage: base-noprelude-4.13.0.0@sha256:3cccbfda38e1422ca5cc436d58858ba51ff9114d2ed87915a6569be11e4e5a90,6842
+    git: https://github.com/serokell/base-noprelude.git
+    commit: 1282e0b992b00089d55228a2aa9edc4a3581c319
 snapshots:
 - completed:
     size: 587393
