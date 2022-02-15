@@ -36,6 +36,7 @@ getPoints ((x1, y1), (x2, y2)) =
     xs = createRange x1 x2
     ys = createRange y1 y2
 
+toMap :: (Ord k, Num a) => [k] -> Map k a
 toMap list = HM.fromListWith (+) zipped
   where
     zipped = zip list (repeat 1)
