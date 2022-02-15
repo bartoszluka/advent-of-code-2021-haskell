@@ -90,7 +90,7 @@ partitionCompare toCompare =
 count' :: (a -> Bool) -> [a] -> Int
 count' predicate list = length (filter predicate list)
 
-count :: (a -> Bool) -> [a] -> Int
+count :: Foldable l => (a -> Bool) -> l a -> Int
 count predicate = getSum . foldMap (Sum . toInt . predicate)
   where
     toInt True = 1

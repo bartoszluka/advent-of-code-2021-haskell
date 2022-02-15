@@ -7,6 +7,7 @@ import qualified Day04
 import qualified Day05
 import qualified Day06
 import qualified Day07
+import qualified Day08
 import Extra (between, choose, count, count', createRange, median, selectKth, zipToLonger)
 import qualified Inputs
 import Relude.Unsafe ((!!))
@@ -114,3 +115,9 @@ main = hspec $ do
 
             it "part 2" $ do
                 Day07.part2 Inputs.day7 `shouldBe` 100220525
+        describe "day 8" $ do
+            it "part 1" $ do
+                Day08.part1 Inputs.day8 `shouldBe` Just 390
+
+-- it "part 2" $ do
+--     Day07.part2 Inputs.day7 `shouldBe` 100220525

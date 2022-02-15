@@ -25,6 +25,7 @@ dependencies:
   - relude
   - flow
   - containers
+  - text
 
 library:
   source-dirs: src
