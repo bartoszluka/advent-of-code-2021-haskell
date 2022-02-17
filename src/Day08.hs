@@ -6,6 +6,7 @@ import qualified Data.Map as Map
 import Data.Set ((\\))
 import qualified Data.Set as Set
 import qualified Data.Text as Text
+import Extra (count)
 import Relude.Extra (bimapBoth)
 
 splitLine :: Text -> Maybe ([Text], [Text])
@@ -17,22 +18,14 @@ parseInput :: Text -> Maybe [([Text], [Text])]
 parseInput = lines .> traverse splitLine
 
 part1 :: Text -> Maybe Int
-part1 input = do
-    parsed <- parseInput input
-    parsed
-        |> map snd
-        |> foldMap sumEasyLengths
-        |> fold .> getSum
-        |> return
+part1 = parseInput .> fmap countEasyDigits
   where
-    sumEasyLengths = map (Text.length .> easyLenghts .> Sum)
-    easyLenghts :: Int -> Int
-    easyLenghts = \case
-        2 -> 1
-        3 -> 1
-        4 -> 1
-        7 -> 1
-        _ -> 0
+    countEasyDigits =
+        map snd
+            .> foldMap sumEasyLengths
+            .> getSum
+    sumEasyLengths :: [Text] -> Sum Int
+    sumEasyLengths = count (Text.length .> flip Set.member [2, 3, 4, 7]) .> Sum
 
 type Segment = Char
 
