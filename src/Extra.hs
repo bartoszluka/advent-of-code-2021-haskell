@@ -1,10 +1,8 @@
-{-# LANGUAGE LambdaCase #-}
-
 module Extra where
 
 import Control.Monad (liftM2)
 import Data.List (partition)
-import Text.Read (readMaybe)
+import Relude.Extra (bimapBoth)
 
 pairMap :: (a -> b) -> (a, a) -> (b, b)
 pairMap f (a, b) = (f a, f b)
@@ -13,25 +11,23 @@ pairMap f (a, b) = (f a, f b)
 pairs :: [a] -> [(a, a)]
 pairs = \case
     [] -> []
-    all@(x : xs) -> zip all xs
+    full@(_ : xs) -> zip full xs
 
 -- [(first, second, third), (second, third, fourth), ...]
 triplets :: [a] -> [(a, a, a)]
 triplets = \case
     [] -> []
     [_] -> []
-    all@(_ : noFirst@(_ : rest)) -> zip3 all noFirst rest
+    full@(_ : noFirst@(_ : rest)) -> zip3 full noFirst rest
 
 choose :: (a -> Maybe b) -> [a] -> [b]
 choose chooser =
     foldr
         ( \x acc -> case chooser x of
             Nothing -> acc
-            Just x -> x : acc
+            Just y -> y : acc
         )
         []
-
-at1 list index = list !!? (index - 1)
 
 groupCount :: Eq a => [a] -> [(a, Int)]
 groupCount list = go list []
@@ -61,17 +57,17 @@ zipToLonger xs ys =
 median :: (Ord a) => [a] -> a
 median list = selectKth half list
   where
-    half = ceiling $ genericLength list / 2
+    half :: Integer = ceiling <| (genericLength list / 2 :: Double)
 
 selectKth :: (Integral i, Ord a, Show i) => i -> [a] -> a
 selectKth k [] = error $ "k = " <> show k <> " is greater than the length"
-selectKth k all@(x : xs)
+selectKth k full@(x : _)
     | k <= lenLess = selectKth k less
     | k <= lenLess + lenEqual = x
     | otherwise = selectKth (k - lenLess - lenEqual) greater
   where
-    (less, equal, greater) = partitionCompare x all
-    [lenLess, lenEqual] = len <$> [less, equal]
+    (less, equal, greater) = partitionCompare x full
+    (lenLess, lenEqual) = bimapBoth len (less, equal)
     len = genericLength
 
 biggerLength :: [a] -> [a] -> [a]

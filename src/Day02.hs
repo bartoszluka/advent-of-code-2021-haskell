@@ -39,11 +39,11 @@ foldCommands =
         (0, 0)
 
 depthTimesTravelled :: [Text] -> Int
-depthTimesTravelled lines =
+depthTimesTravelled commands =
     horizontal * depth
   where
     (horizontal, depth) = foldCommands parsed
-    parsed = choose parseCommand lines
+    parsed = choose parseCommand commands
 
 foldCommands2 :: [Command] -> (Int, Int, Int)
 foldCommands2 =
@@ -56,10 +56,10 @@ foldCommands2 =
         (0, 0, 0)
 
 depthTimesTravelled2 :: [Text] -> Int
-depthTimesTravelled2 lines =
+depthTimesTravelled2 commands =
     horizontal * depth
   where
-    parsed = choose parseCommand lines
+    parsed = choose parseCommand commands
     (horizontal, depth, _) = foldCommands2 parsed
 
 part1 :: [Text] -> Int

@@ -1,6 +1,5 @@
 module Day06 (part1, part1parsing, part2) where
 
-import Control.Monad (liftM2)
 import Data.Array.Unboxed (
     UArray,
     accumArray,

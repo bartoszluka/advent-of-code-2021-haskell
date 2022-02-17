@@ -40,12 +40,7 @@ mostCommonDigitAtPosition pos =
 filterDigitAtPosition :: Int -> Int -> [[Int]] -> [[Int]]
 filterDigitAtPosition pos mostCommon = filter isMostCommon
   where
-    isMostCommon digits = case digits !!? pos of
-        Just digit -> digit == mostCommon
-        Nothing -> False
-
-    -- point free implementation
-    isMostCommon' = lookAt pos .> (<$>) (isEqual mostCommon) .> defaultTo False
+    isMostCommon = lookAt pos .> (<$>) (isEqual mostCommon) .> defaultTo False
     isEqual = (==)
     lookAt = flip (!!?)
     defaultTo = fromMaybe

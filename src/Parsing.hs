@@ -3,13 +3,9 @@ module Parsing where
 import Relude.Unsafe (read)
 import Text.Parsec (
     ParseError,
-    char,
     digit,
-    eof,
     many1,
     parse,
-    sepBy,
-    string,
  )
 import Text.Parsec.String (Parser)
 

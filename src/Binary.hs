@@ -1,6 +1,6 @@
 module Binary where
 
-import Text.Show (Show, show)
+import Text.Show (show)
 
 data BinaryDigit = Zero | One
     deriving (Eq, Enum)
