@@ -26,6 +26,7 @@ dependencies:
   - flow
   - containers
   - text
+  - raw-strings-qq
 
 library:
   source-dirs: src
