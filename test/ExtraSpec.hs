@@ -1,3 +1,5 @@
+module ExtraSpec where
+
 import Extra (between, choose, count, count', createRange, median, selectKth, zipToLonger)
 import Relude.Unsafe ((!!))
 import Test.Hspec (SpecWith, describe, it, shouldBe)
