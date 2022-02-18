@@ -85,7 +85,8 @@ test-suite aoc2021-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Days
+      DaySpec
+      ExtraSpec
       Paths_aoc2021
   hs-source-dirs:
       test
