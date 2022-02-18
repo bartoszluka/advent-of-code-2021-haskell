@@ -46,6 +46,7 @@ library
       OverloadedStrings
       LambdaCase
       ScopedTypeVariables
+      TupleSections
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints
   build-depends:
       array
@@ -68,6 +69,7 @@ executable aoc2021-exe
       OverloadedStrings
       LambdaCase
       ScopedTypeVariables
+      TupleSections
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aoc2021
@@ -94,6 +96,7 @@ test-suite aoc2021-test
       OverloadedStrings
       LambdaCase
       ScopedTypeVariables
+      TupleSections
   ghc-options: -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       HUnit
