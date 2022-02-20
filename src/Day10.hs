@@ -4,6 +4,8 @@ import Extra (choose, median, toMaybe)
 import Stack (
     PoppedError (PoppedWrongItem),
     StackOrError,
+ )
+import qualified Stack (
     popIfEquals,
     push,
  )
@@ -48,10 +50,10 @@ parse :: Text -> Maybe [Bracket]
 parse = toString .> traverse toBracket
 
 scanLine :: [Bracket] -> [StackOrError Bracket]
-scanLine = scanl popOrPush (Right [])
+scanLine = scanl popOrPush (Right mempty)
   where
-    popOrPush stackOrError (Bracket style Open) = push (Bracket style Close) <$> stackOrError
-    popOrPush stackOrError bracket = stackOrError >>= popIfEquals bracket
+    popOrPush stackOrError (Bracket style Open) = Stack.push (Bracket style Close) <$> stackOrError
+    popOrPush stackOrError bracket = stackOrError >>= Stack.popIfEquals bracket
 
 corruptedLineScore :: [Bracket] -> Int
 corruptedLineScore = scanLine .> viaNonEmpty last .=> extractError .>> syntaxErrorScore .> fromMaybe 0
@@ -71,7 +73,7 @@ part1 :: Text -> Int
 part1 = lines .> choose (parse .>> corruptedLineScore) .> sum
 
 incompleteLineScore :: [Bracket] -> Maybe Int
-incompleteLineScore = scanLine .> viaNonEmpty last .=> toMaybe .>> errorScore
+incompleteLineScore = scanLine .> viaNonEmpty last .=> toMaybe .>> toList .>> errorScore
   where
     errorScore :: [Bracket] -> Int
     errorScore = foldl' (\accum current -> accum * 5 + syntaxErrorScore current) 0

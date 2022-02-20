@@ -3,10 +3,10 @@ module Day01 (part1, part2) where
 import Extra (pairs, triplets)
 
 howManyIncreased :: [Int] -> Int
-howManyIncreased = length . filter (uncurry (<)) . pairs
+howManyIncreased = pairs .> filter (uncurry (<)) .> length
 
 howManyIncreased2 :: [Int] -> Int
-howManyIncreased2 = howManyIncreased . map sumUp . triplets
+howManyIncreased2 = triplets .> map sumUp .> howManyIncreased
   where
     sumUp (a, b, c) = a + b + c
 

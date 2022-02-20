@@ -2,13 +2,13 @@ module Day03 (part1, part2) where
 
 import Control.Monad (liftM2)
 import Data.List (partition)
-import Extra (pairMap)
+import Relude.Extra (bimapBoth)
 
 mostCommonDigit :: [Int] -> Int
 mostCommonDigit number =
     if ones >= zeros then 1 else 0
   where
-    (ones, zeros) = pairMap length . partition (1 ==) $ number
+    (ones, zeros) = partition (1 ==) .> bimapBoth length <| number
 
 toBinaryDigits :: Char -> Int
 toBinaryDigits '1' = 1
@@ -35,12 +35,12 @@ mostCommonDigitAtPosition :: Int -> [[Int]] -> Maybe Int
 mostCommonDigitAtPosition pos =
     transpose
         .> (!!? pos)
-        .> (mostCommonDigit <$>)
+        .>> mostCommonDigit
 
 filterDigitAtPosition :: Int -> Int -> [[Int]] -> [[Int]]
 filterDigitAtPosition pos mostCommon = filter isMostCommon
   where
-    isMostCommon = lookAt pos .> (<$>) (isEqual mostCommon) .> defaultTo False
+    isMostCommon = lookAt pos .>> isEqual mostCommon .> defaultTo False
     isEqual = (==)
     lookAt = flip (!!?)
     defaultTo = fromMaybe

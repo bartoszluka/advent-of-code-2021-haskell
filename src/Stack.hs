@@ -1,18 +1,23 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module Stack where
 
 import Text.Show (Show (show))
 import Prelude hiding (show)
 
-type Stack a = [a]
+newtype Stack a = Stack [a]
+    deriving (Show, Eq, Foldable, Semigroup, Monoid)
 
 push :: a -> Stack a -> Stack a
-push = (:)
+push item (Stack list) = Stack <| item : list
 
 pop :: Stack a -> Maybe (a, Stack a)
-pop = uncons
+pop (Stack list) = uncons list |> fmap (mapSnd Stack)
+  where
+    mapSnd f (x, y) = (x, f y)
 
 peek :: Stack a -> Maybe a
-peek = viaNonEmpty head
+peek (Stack list) = list |> viaNonEmpty head
 
 type StackOrError a = Either (PoppedError a) (Stack a)
 
