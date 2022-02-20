@@ -38,7 +38,6 @@ library
       Extra
       Inputs
       MyParser
-      Parsing
       Prelude
       Stack
   other-modules:
@@ -56,7 +55,6 @@ library
     , base-noprelude >=4.14.3 && <5
     , containers
     , flow
-    , parsec
     , raw-strings-qq
     , relude
     , text
@@ -80,7 +78,6 @@ executable aoc2021-exe
     , base-noprelude >=4.14.3 && <5
     , containers
     , flow
-    , parsec
     , raw-strings-qq
     , relude
     , text
@@ -111,7 +108,6 @@ test-suite aoc2021-test
     , flow
     , hspec
     , hspec-contrib
-    , parsec
     , raw-strings-qq
     , relude
     , text

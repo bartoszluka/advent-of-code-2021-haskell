@@ -1,32 +1,34 @@
 module Day05 (part1, part2) where
 
-import qualified Data.Map as HM
-import Extra (choose, createRange, toMaybe, zipToLonger)
-import Parsing (integer, runParse)
-import Text.Parsec (char, eof, string)
-import Text.Parsec.String (Parser)
+import qualified Data.Map as Map
+import qualified Data.Text as Text
+import Extra (choose, createRange, zipToLonger)
 
 type Point = (Int, Int)
 
 type Vector = (Point, Point)
 
-pointParser :: Parser Point
-pointParser = do
-    x <- integer
-    _ <- char ','
-    y <- integer
-    return (x, y)
+pointParser :: Text -> Maybe Point
+pointParser input = do
+    (x, y) <- splitInTwo "," input
+    x' <- readMaybe <| toString x
+    y' <- readMaybe <| toString y
+    return (x', y')
 
-lineParser :: Parser Vector
-lineParser = do
-    p1 <- pointParser
-    _ <- string " -> "
-    p2 <- pointParser
-    eof
-    return (p1, p2)
+splitInTwo :: Text -> Text -> Maybe (Text, Text)
+splitInTwo sep text = case Text.splitOn sep text of
+    [x, y] -> Just (x, y)
+    _ -> Nothing
 
-toVectors :: [String] -> [Vector]
-toVectors = choose (toMaybe . runParse lineParser)
+lineParser :: Text -> Maybe Vector
+lineParser input = do
+    (p1, p2) <- splitInTwo " -> " input
+    p1' <- pointParser p1
+    p2' <- pointParser p2
+    return (p1', p2')
+
+toVectors :: Text -> [Vector]
+toVectors = lines .> choose lineParser
 
 getPoints :: Vector -> [Point]
 getPoints ((x1, y1), (x2, y2)) =
@@ -36,26 +38,26 @@ getPoints ((x1, y1), (x2, y2)) =
     ys = createRange y1 y2
 
 toMap :: (Ord k, Num a) => [k] -> Map k a
-toMap list = HM.fromListWith (+) zipped
+toMap list = Map.fromListWith (+) zipped
   where
     zipped = zip list (repeat 1)
 
-howManyOverlapAtleast :: (Ord a, Num a, Foldable t) => a -> t Vector -> Int
+howManyOverlapAtleast :: (Ord a, Num a, Foldable f) => a -> f Vector -> Int
 howManyOverlapAtleast n vectors =
     let pseudoMap = foldMap getPoints vectors
         grouped = toMap pseudoMap
-     in HM.size (HM.filter (>= n) grouped)
+     in Map.size (Map.filter (>= n) grouped)
 
 howManyOverlapAtleast2 :: [Vector] -> Int
 howManyOverlapAtleast2 = howManyOverlapAtleast (2 :: Int)
 
-part1 :: [String] -> Int
-part1 = done5 $ filter horizontalOrVertical
+part1 :: Text -> Int
+part1 = done5 <| filter horizontalOrVertical
   where
     horizontalOrVertical ((x1, y1), (x2, y2)) = x2 == x1 || y1 == y2
 
-part2 :: [String] -> Int
+part2 :: Text -> Int
 part2 = done5 id
 
-done5 :: ([Vector] -> [Vector]) -> [String] -> Int
-done5 process = howManyOverlapAtleast2 . process . toVectors
+done5 :: ([Vector] -> [Vector]) -> Text -> Int
+done5 process = toVectors .> process .> howManyOverlapAtleast2
