@@ -47,9 +47,6 @@ toBracket =
 parse :: Text -> Maybe [Bracket]
 parse = toString .> traverse toBracket
 
-debug :: Show a => a -> a
-debug x = trace (show x) x
-
 scanLine :: [Bracket] -> [StackOrError Bracket]
 scanLine = scanl popOrPush (Right [])
   where

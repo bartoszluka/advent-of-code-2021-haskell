@@ -38,6 +38,7 @@ ghc-options:
   - -Wincomplete-uni-patterns
   - -Wredundant-constraints
   - -fwrite-ide-info
+  - -hiedir hie
 
 executables:
   aoc2021-exe:
