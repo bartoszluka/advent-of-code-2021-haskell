@@ -17,7 +17,7 @@ markTile drewNumber tile =
 type Board = [[BingoTile]]
 
 markBoard :: Int -> Board -> Board
-markBoard = map . map . markTile
+markBoard = markTile .> map .> map
 
 checkBingo :: Board -> Bool
 checkBingo board =
@@ -27,9 +27,9 @@ checkBingo board =
 
 getUnmarked :: Board -> [Int]
 getUnmarked =
-    let onlyUnmarked = map $ filter $ not . marked
-        getNumbers = map (map number) . onlyUnmarked
-     in concat . getNumbers
+    let onlyUnmarked = map <| filter (marked .> not)
+        getNumbers = onlyUnmarked .> map (map number)
+     in getNumbers .> concat
 
 finalResult :: [Int] -> [Board] -> Int
 finalResult [] _ = 0
@@ -52,7 +52,7 @@ finalResult2 :: [Int] -> [Board] -> Int
 finalResult2 [] _ = 0
 finalResult2 (x : xs) boards =
     let newBoards = map (markBoard x) boards
-        notWon = filter (not . checkBingo) newBoards
+        notWon = filter (checkBingo .> not) newBoards
      in case notWon of
             [lastBoard] -> winLastBoard xs lastBoard
             _ -> finalResult2 xs newBoards
