@@ -126,6 +126,3 @@ part2 =
         .>> sortBy (flip compare)
         .>> take 3
         .>> product
-
-(.>>) :: Functor f => (a -> f b) -> (b -> c) -> a -> f c
-f .>> g = f .> fmap g

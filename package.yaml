@@ -37,6 +37,7 @@ ghc-options:
   - -Wincomplete-record-updates
   - -Wincomplete-uni-patterns
   - -Wredundant-constraints
+  - -fwrite-ide-info
 
 executables:
   aoc2021-exe:
