@@ -1,3 +1,6 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+
+{-# HLINT ignore "Use <|" #-}
 module ExtraSpec where
 
 import Extra (between, choose, count, count', createRange, median, selectKth, zipToLonger)

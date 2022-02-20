@@ -60,7 +60,7 @@ median list = selectKth half list
     half :: Integer = ceiling <| (genericLength list / 2 :: Double)
 
 selectKth :: (Integral i, Ord a, Show i) => i -> [a] -> a
-selectKth k [] = error $ "k = " <> show k <> " is greater than the length"
+selectKth k [] = error <| "k = " <> show k <> " is greater than the length"
 selectKth k full@(x : _)
     | k <= lenLess = selectKth k less
     | k <= lenLess + lenEqual = x
@@ -87,7 +87,7 @@ count' :: (a -> Bool) -> [a] -> Int
 count' predicate list = length (filter predicate list)
 
 count :: Foldable l => (a -> Bool) -> l a -> Int
-count predicate = getSum . foldMap (Sum . toInt . predicate)
+count predicate = foldMap (predicate .> toInt .> Sum) .> getSum
   where
     toInt True = 1
     toInt False = 0
