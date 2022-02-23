@@ -3,6 +3,7 @@ module Prelude (
     module Flow,
     (.>>),
     (.=>),
+    bind,
 ) where
 
 import Flow
@@ -15,3 +16,6 @@ f .>> g = f .> fmap g
 infixl 9 .=>
 (.=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 f .=> g = f >=> g
+
+bind :: Monad m => (a -> m b) -> m a -> m b
+bind f x = x >>= f
