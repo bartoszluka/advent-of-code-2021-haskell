@@ -7,7 +7,7 @@ import Matrix (
     allIndices,
     elements,
     gen8Neighbors,
-    safeIndex,
+    lookup,
     toMatrix,
     updateOne,
  )
@@ -40,7 +40,7 @@ miniInput =
         ]
 
 flashAndUpdate :: Index -> Matrix Octopus -> Matrix Octopus
-flashAndUpdate index octoMatrix = case safeIndex index octoMatrix of
+flashAndUpdate index octoMatrix = case lookup index octoMatrix of
     Just (NotFlashed n) ->
         if n >= 9
             then foldr flashAndUpdate (updateMatrixWith Flashed) neighbors

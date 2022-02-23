@@ -4,6 +4,7 @@ import Data.Array.IArray (
     IArray,
     Ix,
     array,
+    assocs,
     bounds,
     elems,
     inRange,
@@ -40,15 +41,15 @@ toMatrix mapping =
     indexed = zip [1 ..]
     mapSnd function (x, y) = (x, function y)
 
-safeIndex :: (Ix i, IArray ix el) => i -> ix i el -> Maybe el
-safeIndex idx arr =
+lookup :: (Ix i, IArray ix el) => i -> ix i el -> Maybe el
+lookup idx arr =
     if inRange (bounds arr) idx
         then Just <| arr ! idx
         else Nothing
 
 gen8Neighbors :: Index -> Matrix a -> [Index]
 gen8Neighbors index@(i, j) matrix =
-    case safeIndex index matrix of
+    case lookup index matrix of
         Nothing -> []
         Just _ ->
             [ (i - 1, j - 1)
@@ -59,6 +60,17 @@ gen8Neighbors index@(i, j) matrix =
             , (i + 1, j - 1)
             , (i + 1, j)
             , (i + 1, j + 1)
+            ]
+
+gen4Neighbors :: Index -> Matrix a -> [Index]
+gen4Neighbors index@(i, j) matrix =
+    case lookup index matrix of
+        Nothing -> []
+        Just _ ->
+            [ (i, j - 1)
+            , (i, j + 1)
+            , (i - 1, j)
+            , (i + 1, j)
             ]
 
 allIndices :: Matrix a -> [Index]
@@ -74,3 +86,6 @@ updateOne matrix index item = matrix // one (index, item)
 
 elements :: Matrix a -> [a]
 elements = elems
+
+findIndex :: (el -> Bool) -> Matrix el -> Maybe Index
+findIndex predicate = assocs .> find (snd .> predicate) .>> fst
