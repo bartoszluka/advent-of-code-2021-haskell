@@ -948,3 +948,30 @@ day11 =
 1543525861
 1882656326
 8844263151|]
+
+day12 :: Text
+day12 =
+    [r|mj-TZ
+start-LY
+TX-ez
+uw-ez
+ez-TZ
+TH-vn
+sb-uw
+uw-LY
+LY-mj
+sb-TX
+TH-end
+end-LY
+mj-start
+TZ-sb
+uw-RR
+start-TZ
+mj-TH
+ez-TH
+sb-end
+LY-ez
+TX-mt
+vn-sb
+uw-vn
+uw-TZ|]
