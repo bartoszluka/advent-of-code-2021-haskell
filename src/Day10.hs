@@ -9,8 +9,7 @@ import qualified Stack (
     popIfEquals,
     push,
  )
-import Text.Show (Show (show))
-import Prelude hiding (show)
+import qualified Text.Show
 
 data BracketStyle
     = Square
