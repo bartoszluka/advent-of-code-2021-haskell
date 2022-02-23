@@ -1,6 +1,7 @@
 module Extra where
 
 import Control.Monad (liftM2)
+import qualified Data.HashMap.Internal.Strict as HMap
 import Data.List (partition)
 import Relude.Extra (bimapBoth)
 
@@ -37,6 +38,9 @@ groupCount list = go list []
     go (x : xs) accumulated =
         let (equal, rest) = partition (x ==) xs
          in go rest ((x, length equal + 1) : accumulated)
+
+countEach :: (Eq k, Hashable k) => [k] -> [(k, Int)]
+countEach items = zip items (repeat 1) |> HMap.fromListWith (+) |> HMap.toList
 
 toMaybe :: Either err ok -> Maybe ok
 toMaybe (Right x) = Just x
@@ -100,3 +104,6 @@ average = calc sum (/) len
   where
     calc = flip liftM2
     len = genericLength
+
+printInGhci :: Maybe [Text] -> IO ()
+printInGhci = fmap (unlines .> toString) .> fromMaybe "" .> putStrLn

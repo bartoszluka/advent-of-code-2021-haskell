@@ -1,12 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedLists #-}
 
-module Day12 where
+module Day12 (part1, part2) where
 
 import Data.Char (isUpper)
 import qualified Data.HashMap.Strict as HMap
 import qualified Data.HashSet as HSet
 import qualified Data.Text as T
+import Extra (countEach)
 import qualified Text.Show
 
 data Cave
@@ -54,17 +55,15 @@ toCaveSystem caves =
   where
     mapSnd f (a, b) = (a, f b)
 
-bind :: Monad m => (a -> m b) -> m a -> m b
-bind f x = x >>= f
+part1 :: Text -> Maybe Int
+part1 =
+    parseInput
+        .>> toCaveSystem
+        .>> findAllPaths (const False)
+        .>> length
 
-printPath :: [Cave] -> Text
-printPath = map show .> T.intercalate " -> "
-
-printIO :: Maybe [Text] -> IO ()
-printIO = fmap (unlines .> toString) .> fromMaybe "" .> putStrLn
-
-findAllPaths :: CaveSystem -> [[Cave]]
-findAllPaths system =
+findAllPaths :: ([Cave] -> Bool) -> CaveSystem -> [[Cave]]
+findAllPaths duplicates system =
     case HMap.lookup StartCave system of
         Nothing -> []
         Just startingCaves -> concatMap (findPath [] [StartCave]) startingCaves |> map reverse
@@ -78,15 +77,22 @@ findAllPaths system =
                 let newPath = bigCave : path
                  in concatMap (findPath foundPaths newPath) (nextCaves bigCave)
             smallCave@(SmallCave _) ->
-                if smallCave `elem` path
-                    then foundPaths
-                    else concatMap (findPath foundPaths (smallCave : path)) (nextCaves smallCave)
+                if smallCave `notElem` path || duplicates path
+                    then concatMap (findPath foundPaths (smallCave : path)) (nextCaves smallCave)
+                    else foundPaths
 
     nextCaves cave = HMap.lookup cave system |> fromMaybe []
 
-part1 :: Text -> Maybe Int
-part1 =
+noDuplicateSmallCaves :: [Cave] -> Bool
+noDuplicateSmallCaves path =
+    path |> filter isSmallCave |> countEach |> map snd |> all (<= 1)
+  where
+    isSmallCave (SmallCave _) = True
+    isSmallCave _ = False
+
+part2 :: Text -> Maybe Int
+part2 =
     parseInput
         .>> toCaveSystem
-        .>> findAllPaths
+        .>> findAllPaths noDuplicateSmallCaves
         .>> length

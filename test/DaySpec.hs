@@ -14,6 +14,7 @@ import qualified Day08
 import qualified Day09
 import qualified Day10
 import qualified Day11
+import qualified Day12
 import qualified Inputs
 import Test.Hspec (SpecWith, describe, it, shouldBe)
 
@@ -98,4 +99,6 @@ daysTests = describe "Solutions to each day" $ do
 
     describe "day 12" $ do
         it "part 1" $ do
-            Day11.part1 Inputs.day11 `shouldBe` Just 3563
+            Day12.part1 Inputs.day12 `shouldBe` Just 3563
+        it "part 2" $ do
+            Day12.part2 Inputs.day12 `shouldBe` Just 105453
