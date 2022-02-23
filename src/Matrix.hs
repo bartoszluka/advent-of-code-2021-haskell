@@ -12,9 +12,7 @@ import Data.Array.IArray (
     (!),
     (//),
  )
-import Data.Array.Unboxed (
-    Array,
- )
+import Data.Array.Unboxed (Array)
 import Data.Foldable (maximum)
 
 type Index = (Int, Int)
