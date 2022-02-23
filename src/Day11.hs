@@ -1,13 +1,9 @@
-{-# LANGUAGE DeriveFunctor #-}
-
 module Day11 where
 
 import Data.Array.IArray (
     IArray,
     Ix,
-    amap,
     array,
-    assocs,
     bounds,
     elems,
     inRange,
@@ -19,25 +15,12 @@ import Data.Array.Unboxed (
     Array,
  )
 import Data.Foldable (maximum)
-import Data.Text (chunksOf, concat)
 import Extra (count)
-import Text.Show (show)
-import Prelude hiding (show)
+import qualified Text.Show
 
 type Index = (Int, Int)
 
 type Matrix a = Array Index a
-
-data Visited a = Visited a | NotVisited a
-    deriving (Eq, Show, Functor)
-
-extract :: Visited a -> a
-extract (Visited x) = x
-extract (NotVisited x) = x
-
-unVisit :: Visited a -> Visited a
-unVisit (NotVisited a) = NotVisited a
-unVisit (Visited a) = NotVisited a
 
 data Octopus = Flashed | NotFlashed Int
     deriving (Eq)
@@ -106,48 +89,25 @@ genNeighbors index@(i, j) matrix =
             , (i + 1, j + 1)
             ]
 
-increaseEnergy :: Octopus -> Octopus
-increaseEnergy Flashed = Flashed
-increaseEnergy (NotFlashed n)
-    | n < 9 =
-        NotFlashed (n + 1)
-    | otherwise = Flashed
-
-prettyPrintMatrix :: Show a => Matrix a -> Text
-prettyPrintMatrix matrix = matrix |> assocs |> map (snd .> show .> toText) |> Data.Text.concat |> chunksOf size |> unlines
-  where
-    size = bounds matrix |> snd |> fst
-
-printNewLines :: Text -> IO ()
-printNewLines = toString .> putStrLn
-
-debug x = trace (show x) x
-
-flashAndUpdate :: Index -> Matrix (Visited Octopus) -> Matrix (Visited Octopus)
+flashAndUpdate :: Index -> Matrix Octopus -> Matrix Octopus
 flashAndUpdate index octoMatrix = case safeIndex index octoMatrix of
-    Just (NotVisited octopus) -> case increaseEnergy octopus of
-        Flashed -> foldr flashAndUpdate (updateMatrixWith Flashed) neighbors
-        NotFlashed n ->
-            if n >= 10
-                then flashAndUpdate index (updateMatrixWith Flashed)
-                else updateMatrixWith (NotFlashed n)
-    Just (Visited (NotFlashed n)) ->
-        if n >= 10
-            then flashAndUpdate index (updateMatrixWith Flashed)
-            else updateMatrixWith (NotFlashed n)
+    Just (NotFlashed n) ->
+        if n >= 9
+            then foldr flashAndUpdate (updateMatrixWith Flashed) neighbors
+            else updateMatrixWith (NotFlashed (n + 1))
     _ -> octoMatrix
   where
-    updateMatrixWith octo = octoMatrix // [(index, Visited octo)]
+    updateMatrixWith octopus = octoMatrix // one (index, octopus)
     neighbors = genNeighbors index octoMatrix
 
-oneStep :: Matrix (Visited Octopus) -> Matrix (Visited Octopus)
+oneStep :: Matrix Octopus -> Matrix Octopus
 oneStep matrix = newMatrix
   where
     newMatrix = foldr flashAndUpdate matrix indices
     indices = matrix |> bounds |> range
 
 howManyFlashed :: Matrix Octopus -> Int
-howManyFlashed = elems .> debug .> count isFlashed
+howManyFlashed = elems .> count isFlashed
 
 resetFlash :: Octopus -> Octopus
 resetFlash =
@@ -155,10 +115,12 @@ resetFlash =
         Flashed -> NotFlashed 0
         NotFlashed n -> NotFlashed n
 
-steps :: Int -> Matrix (Visited Octopus) -> Int
+steps :: Int -> Matrix Octopus -> Int
 steps n matrix
-    | n <= 0 = 0
-    | otherwise = flashed + steps (n - 1) (amap (fmap resetFlash .> unVisit) newMatrix)
-  where
-    newMatrix = oneStep matrix
-    flashed = howManyFlashed (amap extract newMatrix)
+    | n <= 0 = howManyFlashed matrix
+    | otherwise =
+        let newMatrix = oneStep matrix
+         in howManyFlashed newMatrix + steps (n - 1) (resetFlash <$> newMatrix)
+
+part1 :: Text -> Maybe Int
+part1 = toMatrix .>> steps 100
