@@ -1,4 +1,4 @@
-module Day11 where
+module Day11 (part1, part2) where
 
 import Extra (count)
 import Matrix (
@@ -8,6 +8,7 @@ import Matrix (
     elements,
     gen8Neighbors,
     lookup,
+    size,
     toMatrix,
     updateOne,
  )
@@ -23,21 +24,6 @@ isFlashed (NotFlashed _) = False
 instance Show Octopus where
     show Flashed = "*"
     show (NotFlashed n) = show n
-
-miniInput :: Text
-miniInput =
-    unlines
-        [ "5483143223"
-        , "2745854711"
-        , "5264556173"
-        , "6141336146"
-        , "6357385478"
-        , "4167524645"
-        , "2176841721"
-        , "6882881134"
-        , "4846848554"
-        , "5283751526"
-        ]
 
 flashAndUpdate :: Index -> Matrix Octopus -> Matrix Octopus
 flashAndUpdate index octoMatrix = case lookup index octoMatrix of
@@ -73,3 +59,19 @@ steps n matrix
 
 part1 :: Text -> Maybe Int
 part1 = toMatrix NotFlashed .>> steps 100
+
+whenAllFlashed :: Matrix Octopus -> Int
+whenAllFlashed = whenAllFlashed' 0
+  where
+    whenAllFlashed' currentStep matrix
+        | allFlashed = currentStep
+        | otherwise =
+            matrix
+                |> (resetFlash <$>)
+                |> oneStep
+                |> whenAllFlashed' (currentStep + 1)
+      where
+        allFlashed = howManyFlashed matrix == size matrix
+
+part2 :: Text -> Maybe Int
+part2 = toMatrix NotFlashed .>> whenAllFlashed

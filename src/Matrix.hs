@@ -89,3 +89,9 @@ elements = elems
 
 findIndex :: (el -> Bool) -> Matrix el -> Maybe Index
 findIndex predicate = assocs .> find (snd .> predicate) .>> fst
+
+size :: Matrix a -> Int
+size = allIndices .> length
+
+genericSize :: Integral i => Matrix a -> i
+genericSize = allIndices .> genericLength
