@@ -7,7 +7,7 @@ import Data.Char (isUpper)
 import qualified Data.HashMap.Strict as HMap
 import qualified Data.HashSet as HSet
 import qualified Data.Text as T
-import Extra (countEach, splitInTwo)
+import Extra (countEachHash, splitInTwo)
 import qualified Text.Show
 
 data Cave
@@ -80,7 +80,7 @@ findAllPaths duplicates system =
 
 noDuplicateSmallCaves :: [Cave] -> Bool
 noDuplicateSmallCaves path =
-    path |> filter isSmallCave |> countEach |> map snd |> all (<= 1)
+    path |> filter isSmallCave |> countEachHash |> map snd |> all (<= 1)
   where
     isSmallCave (SmallCave _) = True
     isSmallCave _ = False

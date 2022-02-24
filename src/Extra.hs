@@ -1,8 +1,9 @@
 module Extra where
 
 import Control.Monad (liftM2)
-import qualified Data.HashMap.Internal.Strict as HMap
+import qualified Data.HashMap.Strict as HMap
 import Data.List (partition)
+import qualified Data.Map as Map
 import Data.Text (splitOn)
 import Relude.Extra (bimapBoth)
 
@@ -40,8 +41,11 @@ groupCount list = go list []
         let (equal, rest) = partition (x ==) xs
          in go rest ((x, length equal + 1) : accumulated)
 
-countEach :: (Eq k, Hashable k) => [k] -> [(k, Int)]
-countEach items = zip items (repeat 1) |> HMap.fromListWith (+) |> HMap.toList
+countEachHash :: (Eq k, Hashable k) => [k] -> [(k, Int)]
+countEachHash items = zip items (repeat 1) |> HMap.fromListWith (+) |> HMap.toList
+
+countEachOrd :: (Ord k) => [k] -> [(k, Int)]
+countEachOrd items = zip items (repeat 1) |> Map.fromListWith (+) |> Map.toList
 
 toMaybe :: Either err ok -> Maybe ok
 toMaybe (Right x) = Just x
