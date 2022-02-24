@@ -1,39 +1,13 @@
-{-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE FlexibleInstances #-}
 
-module Day13 where
+module Day13 (part1, part2, part2Show) where
 
-import Control.Monad (liftM2)
 import Data.Array.IArray (Ix (range))
 import Data.List (groupBy)
-import Data.Sequence (chunksOf)
 import qualified Data.Set as Set
 import qualified Data.Text as T
-import Extra (mapFst, mapSnd, printInGhci, readMaybeText, splitInTwo)
-import Text.RawString.QQ (r)
-
-miniInput :: Text
-miniInput =
-    [r|6,10
-0,14
-9,10
-0,3
-10,4
-4,11
-6,0
-6,12
-4,1
-0,13
-10,12
-3,4
-3,0
-8,4
-1,10
-2,14
-8,10
-9,0
-
-fold along y=7
-fold along x=5|]
+import Extra (mapFst, mapSnd, readMaybeText, splitInTwo)
+import qualified Text.Show
 
 data FoldAlong
     = X Int
@@ -67,45 +41,54 @@ parseDot input = do
     y' <- readMaybeText y
     return (x', y')
 
-data Paper = Paper
-    { dotSet :: !(Set Dot)
-    , xSize :: !Int
-    , ySize :: Int
-    }
-
 foldAlong :: Set Dot -> FoldAlong -> Set Dot
 foldAlong set = \case
     X n -> foldSet fst mapFst n set
     Y n -> foldSet snd mapSnd n set
   where
-    foldSet whichElement mapping n =
-        Set.filter (whichElement .> (/= n))
-            .> Set.partition (whichElement .> (< n))
+    foldSet selector selectorMap n =
+        Set.filter (selector .> (/= n))
+            .> Set.partition (selector .> (< n))
             .> (\(lessThan, greaterThan) -> lessThan <> invertCoordinates greaterThan)
       where
-        invertCoordinates = Set.map (mapping (\xy -> 2 * n - xy))
+        -- y -> (y - 2 * (y - n))
+        -- y -> (y - 2y + 2n)
+        -- y -> (2n - y)
+        invertCoordinates = Set.map (selectorMap (\coordinate -> 2 * n - coordinate))
 
-part1 :: Text -> Maybe (Set Dot)
-part1 = parseInput .> fmap (mapSnd (take 1)) .> fmap (uncurry (foldl' foldAlong))
+part1 :: Text -> Maybe Int
+part1 = parseInput .> fmap (mapSnd (take 1)) .> fmap (uncurry (foldl' foldAlong) .> Set.size)
 
-debug v = trace (show v) v
+newtype PrintableSet = PrintableSet (Set Dot)
 
-printTransparentPaper :: Set Dot -> [Text]
+instance Show PrintableSet where
+    show (PrintableSet set) =
+        set
+            |> printTransparentPaper
+            |> ("\n" <>)
+            |> toString
+
+printTransparentPaper :: Set Dot -> Text
 printTransparentPaper set =
-    case Set.lookupMax set of
-        Nothing -> []
-        Just bound ->
-            range ((0, 0), bound)
-                |> groupBy (on (==) fst)
-                |> map
-                    ( map
-                        ( \point ->
-                            if point `Set.member` set
-                                then '#'
-                                else '.'
-                        )
-                        .> toText
-                    )
+    range ((0, 0), (findMax fst, findMax snd))
+        |> groupBy (on (==) fst)
+        |> transpose
+        |> map
+            ( map
+                ( \point ->
+                    if point `Set.member` set
+                        then '#'
+                        else ' '
+                )
+                .> toText
+                .> T.intersperse ' '
+            )
+        |> unlines
+  where
+    findMax selector = set |> Set.map selector .> Set.findMax
 
 part2 :: Text -> Maybe (Set Dot)
 part2 = parseInput .> fmap (uncurry (foldl' foldAlong))
+
+part2Show :: Text -> Maybe PrintableSet
+part2Show = part2 .>> PrintableSet
