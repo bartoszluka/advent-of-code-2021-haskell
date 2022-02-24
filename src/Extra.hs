@@ -113,3 +113,12 @@ splitInTwo :: Text -> Text -> Maybe (Text, Text)
 splitInTwo sep text = case splitOn sep text of
     [x, y] -> Just (x, y)
     _ -> Nothing
+
+readMaybeText :: (Read a) => Text -> Maybe a
+readMaybeText = toString .> readMaybe
+
+mapFst :: (a -> c) -> (a, b) -> (c, b)
+mapFst f (x, y) = (f x, y)
+
+mapSnd :: (b -> c) -> (a, b) -> (a, c)
+mapSnd f (x, y) = (x, f y)
