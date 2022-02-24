@@ -1,8 +1,7 @@
 module Day05 (part1, part2) where
 
 import qualified Data.Map as Map
-import qualified Data.Text as Text
-import Extra (choose, createRange, zipToLonger)
+import Extra (choose, createRange, splitInTwo, zipToLonger)
 
 type Point = (Int, Int)
 
@@ -14,11 +13,6 @@ pointParser input = do
     x' <- readMaybe <| toString x
     y' <- readMaybe <| toString y
     return (x', y')
-
-splitInTwo :: Text -> Text -> Maybe (Text, Text)
-splitInTwo sep text = case Text.splitOn sep text of
-    [x, y] -> Just (x, y)
-    _ -> Nothing
 
 lineParser :: Text -> Maybe Vector
 lineParser input = do

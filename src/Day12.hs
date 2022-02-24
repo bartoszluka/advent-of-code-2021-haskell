@@ -7,7 +7,7 @@ import Data.Char (isUpper)
 import qualified Data.HashMap.Strict as HMap
 import qualified Data.HashSet as HSet
 import qualified Data.Text as T
-import Extra (countEach)
+import Extra (countEach, splitInTwo)
 import qualified Text.Show
 
 data Cave
@@ -39,11 +39,6 @@ parseLine :: Text -> Maybe (Cave, Cave)
 parseLine input = do
     (label1, label2) <- splitInTwo "-" input
     return (toCave label1, toCave label2)
-
-splitInTwo :: Text -> Text -> Maybe (Text, Text)
-splitInTwo sep text = case T.splitOn sep text of
-    [x, y] -> Just (x, y)
-    _ -> Nothing
 
 type CaveSystem = HashMap Cave (HashSet Cave)
 

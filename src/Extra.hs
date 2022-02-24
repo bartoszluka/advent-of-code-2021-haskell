@@ -3,6 +3,7 @@ module Extra where
 import Control.Monad (liftM2)
 import qualified Data.HashMap.Internal.Strict as HMap
 import Data.List (partition)
+import Data.Text (splitOn)
 import Relude.Extra (bimapBoth)
 
 pairMap :: (a -> b) -> (a, a) -> (b, b)
@@ -107,3 +108,8 @@ average = calc sum (/) len
 
 printInGhci :: Maybe [Text] -> IO ()
 printInGhci = fmap (unlines .> toString) .> fromMaybe "" .> putStrLn
+
+splitInTwo :: Text -> Text -> Maybe (Text, Text)
+splitInTwo sep text = case splitOn sep text of
+    [x, y] -> Just (x, y)
+    _ -> Nothing
