@@ -92,15 +92,20 @@ concatWithoutDuplicates = \case
     [] -> []
     [Pair (a, b)] -> [a, b]
     [Triple (a, b, c)] -> [a, b, c]
-    Triple (a, b, _) : rest -> [a, b] ++ (concatWithoutDuplicates <! rest)
-    Pair (a, _) : rest -> a : (concatWithoutDuplicates <! rest)
+    Triple (a, b, _) : rest -> [a, b] ++ concatWithoutDuplicates rest
+    Pair (a, _) : rest -> a : concatWithoutDuplicates rest
 
 -- use array for linear counting
 countChars :: [Char] -> [(Char, Integer)]
-countChars = flip zip (repeat 1) .> toArray .> assocs .> filter (snd .> (> 0))
+countChars =
+    zipWithOnes
+        .> toArray
+        .> assocs
+        .> filter (snd .> (> 0))
   where
     toArray :: [(Char, Integer)] -> Array Char Integer
     toArray = accumArray (+) 0 (('A', 'Z') :: (Char, Char))
+    zipWithOnes = flip zip (repeat 1)
 
 steps :: Integer -> [Char] -> Map Polymer Char -> [Char]
 steps n template rules =
@@ -111,7 +116,9 @@ steps n template rules =
 
 solution :: Integer -> Text -> Maybe Integer
 solution n =
-    parseInput .>> uncurry (steps n) .>> countChars
+    parseInput
+        .>> uncurry (steps n)
+        .>> countChars
         .>> map snd
         .>> calc maximum (-) minimum
   where
@@ -122,3 +129,6 @@ part1 = solution 10
 
 part2 :: Text -> Maybe Integer
 part2 = solution 40
+
+main :: IO ()
+main = print <| fromMaybe 0 <| solution 18 miniInput
