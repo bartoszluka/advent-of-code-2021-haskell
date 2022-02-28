@@ -115,3 +115,5 @@ daysTests = describe "Solutions to each day" $ do
     describe "day 14" $ do
         it "part 1" $ do
             Day14.part1 Inputs.day14 `shouldBe` Just 3058
+        it "part 2" $ do
+            Day14.part2 Inputs.day14 `shouldBe` Just 3447389044530

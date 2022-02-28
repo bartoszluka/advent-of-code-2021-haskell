@@ -1,36 +1,10 @@
-{-# LANGUAGE QuasiQuotes #-}
+module Day14 (part1, part2) where
 
-module Day14 where
-
-import Control.Monad (liftM2)
-import Data.Array.Unboxed (Array, accum, accumArray, array, assocs, (//))
+import Data.Array.Unboxed (Array, accumArray, assocs)
 import Data.Foldable (maximum, minimum)
 import qualified Data.Map.Strict as Map
-import qualified Data.Sequence as Seq
-import Extra (pairs, splitInTwo)
-import Text.RawString.QQ (r)
+import Extra (calc, pairs, splitInTwo, timesApply)
 import qualified Text.Show
-
-miniInput :: Text
-miniInput =
-    [r|NNCB
-
-CH -> B
-HH -> N
-CB -> H
-NH -> C
-HB -> C
-HC -> B
-HN -> C
-NN -> C
-BH -> H
-NC -> B
-NB -> B
-BN -> B
-BB -> N
-BC -> B
-CC -> N
-CN -> C|]
 
 newtype Polymer = Polymer (Char, Char)
     deriving (Eq, Ord)
@@ -38,24 +12,12 @@ newtype Polymer = Polymer (Char, Char)
 instance Show Polymer where
     show (Polymer (x, y)) = [x, y]
 
-newtype PolymerRules = PolymerRules (Map Polymer Char)
-
--- for pretty printing
-instance Show PolymerRules where
-    show (PolymerRules rules) =
-        rules
-            |> Map.toList
-            |> map (\(polymer, char) -> show polymer <> " -> " <> one char)
-            |> unlines
-            |> ("\n" <>)
-            |> toString
-
-parseInput :: Text -> Maybe ([Char], Map Polymer Char)
+parseInput :: Text -> Maybe (Map Polymer Char, NonEmpty Char)
 parseInput input = do
     (template, rules) <- splitInTwo "\n\n" input
     polymerRules <- traverse parseRule <| lines rules
-
-    return (toString template, Map.fromList polymerRules)
+    template' <- nonEmpty <| toString template
+    return (Map.fromList polymerRules, template')
 
 parseRule :: Text -> Maybe (Polymer, Char)
 parseRule rule = do
@@ -73,8 +35,8 @@ parseRule rule = do
         [x, y] -> Just <| Polymer (x, y)
         _ -> Nothing
 
-polymerize :: [Char] -> Map Polymer Char -> [Char]
-polymerize template rules =
+polymerize :: Map Polymer Char -> [Char] -> [Char]
+polymerize rules template =
     template
         |> pairs
         |> map Polymer
@@ -105,74 +67,53 @@ countChars =
         .> filter (snd .> (> 0))
   where
     toArray :: [(Char, Integer)] -> Array Char Integer
-    toArray = accumArray (+) 0 (('A', 'Z') :: (Char, Char))
+    toArray = accumArray (+) 0 ('A', 'Z')
     zipWithOnes = flip zip (repeat 1)
 
-steps :: Integer -> [Char] -> Map Polymer Char -> [Char]
-steps n template rules =
-    foldl'
-        (\newTemplate _ -> polymerize newTemplate rules)
-        template
-        [1 .. n]
-
-solution :: Integer -> Text -> Maybe Integer
-solution n =
+naiveSolution :: Int -> Text -> Maybe Integer
+naiveSolution n =
     parseInput
-        .>> applyToPair (steps n)
+        .>> uncurry steps
         .>> countChars
         .>> map snd
         .>> calc maximum (-) minimum
   where
-    calc = flip liftM2
-    applyToPair = uncurry
+    steps rules = toList .> (n `timesApply` polymerize rules)
 
 part1 :: Text -> Maybe Integer
-part1 = solution 10
+part1 = naiveSolution 10
+
+-- part 2 is done differently because the first solution grows exponentially
+
+polymerStep :: Map Polymer Char -> Map Polymer Integer -> Map Polymer Integer
+polymerStep rules =
+    Map.assocs .> map expandRule .> Map.unionsWith (+)
+  where
+    expandRule (polymer@(Polymer (a, b)), n) = case Map.lookup polymer rules of
+        Nothing -> one (polymer, n)
+        Just expanded ->
+            Map.fromListWith
+                (+)
+                [ (Polymer (a, expanded), n)
+                , (Polymer (expanded, b), n)
+                ]
+
+polymerizeNTimes :: Int -> Map Polymer Char -> NonEmpty Char -> Integer
+polymerizeNTimes n rules template =
+    let initialCounts = template |> toPolymers |> withOnes |> Map.fromListWith (+)
+     in initialCounts
+            |> n `timesApply` polymerStep rules
+            |> Map.mapKeysWith (+) (\(Polymer (_, b)) -> b)
+            |> Map.adjust (+ 1) (head template)
+            |> calc maximum (-) minimum
+  where
+    toPolymers :: NonEmpty Char -> [Polymer]
+    toPolymers = toList .> pairs .> map Polymer
+    withOnes = flip zip (repeat 1)
+
+solution :: Int -> Text -> Maybe Integer
+solution n =
+    parseInput .>> uncurry (polymerizeNTimes n)
 
 part2 :: Text -> Maybe Integer
 part2 = solution 40
-
-main :: IO ()
-main = print <| fromMaybe 0 <| solution 18 miniInput
-
-type Counts = Array Char Integer
-charArray :: [(Char, Integer)] -> Counts
-charArray = array ('A', 'Z')
-
-zeros :: Counts
-zeros = charArray (zip ['A' .. 'Z'] (repeat 0))
-
-zerosWith :: [Char] -> Counts
-zerosWith chars = zeros // zip chars (repeat 1)
-
-polymerizeWithArray :: Int -> Map Polymer Char -> Polymer -> Counts
-polymerizeWithArray 0 _ (Polymer (x, _)) = zerosWith [x]
-polymerizeWithArray depth rules polymer@(Polymer (x, y)) = case Map.lookup polymer rules of
-    Nothing -> zerosWith [x]
-    Just c ->
-        let poly char1 char2 = polymerizeWithArray (depth - 1) rules (Polymer (char1, char2))
-         in mergeArrays
-                (poly x c)
-                (poly c y)
-
-mergeArrays :: Counts -> Counts -> Counts
-mergeArrays chars chars' = accum (+) chars (assocs chars')
-
--- NN
--- NCN
--- NBCCN
--- NBBBCNCCN
--- NBBNBNBBCCNBCNCCN
-
-rul :: Map Polymer Char
-rul = parseInput miniInput |> fmap snd |> fromMaybe Map.empty
-
-countPolymers :: Int -> Map Polymer Char -> [Char] -> [(Char, Integer)]
-countPolymers depth rules template =
-    let polymers = toPolymers template
-     in map (polymerizeWithArray depth rules) polymers
-            |> foldl' mergeArrays zeros
-            |> assocs
-            |> filter (snd .> (> 0))
-  where
-    toPolymers = pairs .> map Polymer

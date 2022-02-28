@@ -6,6 +6,7 @@ import Data.List (partition)
 import qualified Data.Map as Map
 import Data.Text (splitOn)
 import Relude.Extra (bimapBoth)
+import Relude.Unsafe ((!!))
 
 pairMap :: (a -> b) -> (a, a) -> (b, b)
 pairMap f (a, b) = (f a, f b)
@@ -15,6 +16,10 @@ pairs :: [a] -> [(a, a)]
 pairs = \case
     [] -> []
     full@(_ : xs) -> zip full xs
+
+-- [(first, second), (second, third), ...]
+pairsNonEmpty :: NonEmpty a -> [(a, a)]
+pairsNonEmpty xs = zip (toList xs) (tail xs)
 
 -- [(first, second, third), (second, third, fourth), ...]
 triplets :: [a] -> [(a, a, a)]
@@ -107,7 +112,6 @@ n `between` (lower, upper) = lower <= n && n <= upper
 average :: Fractional a => [a] -> a
 average = calc sum (/) len
   where
-    calc = flip liftM2
     len = genericLength
 
 printInGhci :: Maybe [Text] -> IO ()
@@ -126,3 +130,9 @@ mapFst f (x, y) = (f x, y)
 
 mapSnd :: (b -> c) -> (a, b) -> (a, c)
 mapSnd f (x, y) = (x, f y)
+
+calc :: Monad m => m a1 -> (a1 -> a2 -> r) -> m a2 -> m r
+calc = flip liftM2
+
+timesApply :: Int -> (a -> a) -> a -> a
+n `timesApply` f = iterate f .> (!! n)
